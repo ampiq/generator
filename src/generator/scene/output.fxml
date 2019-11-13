@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.shape.Line?>
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="793.0" prefWidth="450.0" style="-fx-background-color: #D2D2D2;" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="generator.controller.OutputController">
+   <children>
+      <AnchorPane layoutY="411.0" prefHeight="142.0" prefWidth="450.0" style="-fx-background-color: #666666;" AnchorPane.bottomAnchor="240.0">
+         <children>
+            <TableView fx:id="matrixb" prefHeight="142.0" prefWidth="450.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+         </children>
+      </AnchorPane>
+      <AnchorPane layoutY="234.0" prefHeight="136.0" prefWidth="450.0" style="-fx-background-color: #666666;" AnchorPane.bottomAnchor="423.0">
+         <children>
+            <TableView fx:id="planp" prefHeight="61.0" prefWidth="450.0" AnchorPane.bottomAnchor="75.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+         </children>
+      </AnchorPane>
+      <Label fx:id="inter1" layoutX="107.0" layoutY="19.0" text="Количество временных интервалов" />
+      <Label fx:id="inter2" layoutX="107.0" layoutY="64.0" text="Количество решаемых задач" />
+      <Button fx:id="nextButton" layoutX="366.0" layoutY="555.0" mnemonicParsing="false" prefHeight="31.0" prefWidth="70.0" text="Next" AnchorPane.bottomAnchor="14.0" AnchorPane.rightAnchor="14.0" />
+      <Label layoutX="15.0" layoutY="203.0" text="План P" AnchorPane.bottomAnchor="569.0" />
+      <Label layoutX="15.0" layoutY="380.0" text="Матрица D" AnchorPane.bottomAnchor="392.0" />
+      <TextField fx:id="value1Text" layoutX="25.0" layoutY="14.0" prefHeight="31.0" prefWidth="45.0" />
+      <TextField fx:id="value2Text" layoutX="25.0" layoutY="59.0" prefHeight="31.0" prefWidth="45.0" />
+      <Label layoutX="38.0" layoutY="119.0" text="Размерность задачи" />
+      <TextField fx:id="valueM" layoutX="139.0" layoutY="153.0" prefHeight="31.0" prefWidth="48.0" />
+      <TextField fx:id="valueN" layoutX="267.0" layoutY="153.0" prefHeight="31.0" prefWidth="48.0" />
+      <Label layoutX="115.0" layoutY="158.0" text="M" />
+      <Label layoutX="239.0" layoutY="158.0" text="N" />
+      <Line endX="298.0" layoutX="126.0" layoutY="108.0" startX="-100.0" AnchorPane.leftAnchor="25.5" />
+      <Line endX="298.0" layoutX="125.0" layoutY="193.0" startX="-100.0" />
+      <Line endX="286.0" layoutX="131.0" layoutY="143.0" startX="-100.0" />
+      <Label layoutX="15.0" layoutY="567.0" text="Вектор В результат" />
+      <AnchorPane layoutY="588.0" prefHeight="142.0" prefWidth="450.0" style="-fx-background-color: #666666;" AnchorPane.bottomAnchor="55.0">
+         <children>
+            <TableView fx:id="vectorb1" prefHeight="142.0" prefWidth="450.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+         </children>
+      </AnchorPane>
+   </children>
+</AnchorPane>
