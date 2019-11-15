@@ -9,8 +9,6 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 
 import java.io.File;
-import java.io.IOException;
-import java.io.PrintWriter;
 
 public class OutputController {
 
@@ -25,9 +23,6 @@ public class OutputController {
 
     @FXML
     private TableView<Integer> vectorb1;
-
-    @FXML
-    private TextField valueT;
 
     @FXML
     private Label inter2;
@@ -47,11 +42,11 @@ public class OutputController {
     @FXML
     private TextField value2Text;
 
-    @FXML
-    private TextField valueK;
-
-    int vp1 = 1, vp2 = 1, vpt = 1, val;
-    boolean exist = false;
+    private int vp1 = 1;
+    private int vp2 = 1;
+    private int vpt = 1;
+    private int val;
+    private boolean exist = false;
 
     @FXML
     void initialize() {
@@ -68,7 +63,6 @@ public class OutputController {
             String value2 = valueN.getText();
             String value3 = value1Text.getText();
             String value4 = value2Text.getText();
-            String value5 = valueT.getText();
 
             if (exist) {
                 Alert alertError2 = new Alert(Alert.AlertType.INFORMATION);
@@ -80,7 +74,7 @@ public class OutputController {
                 nextButton.getScene().getWindow().hide();
             }
 
-            if (value1.equals("") || value2.equals("") || value3.equals("") || value4.equals("") || value5.equals((""))) {
+            if (value1.equals("") || value2.equals("") || value3.equals("") || value4.equals("")) {
                 alertError.setTitle("Не все данные введены");
                 alertError.setHeaderText(null);
                 alertError.setContentText("Заполните поля интервалов и задач");
@@ -88,13 +82,9 @@ public class OutputController {
             } else {
                 int v1 = Integer.parseInt(value1Text.getText());
                 int v2 = Integer.parseInt(value2Text.getText());
-                int v3 = Integer.parseInt(valueT.getText());
                 int a = Integer.parseInt(valueM.getText());
                 int b = Integer.parseInt(valueN.getText());
                 int pa = 1, pb = 1;
-
-                String fileName = "OUT_t" + vpt + "___" + vp1 + "_" + vp2 + ".txt";
-                File file = new File(fileName);
 
                 planp.getColumns().clear();
                 matrixb.getColumns().clear();
@@ -106,7 +96,7 @@ public class OutputController {
                 inter1.setText("Количество временных интервалов: (" + vp1 + " из " + v1 + ")");
                 inter2.setText("Количество решаемых задач: (" + (vp2) + " из " + v2 + ")");
 
-                if (vpt <= v3 && vp1 == v1 && v2 == vp2) {
+                if (vp1 == v1 && v2 == vp2) {
                     vpt++;
                     vp1 = 1;
                     vp2 = 0;
@@ -140,84 +130,10 @@ public class OutputController {
                     vectorb1.getItems().addAll(pb);
                     pb++;
                 }
-                if (v3 != 1 || !exist) {
-
-                    try {
-                        //проверяем, что если файл не существует то создаем его
-                        if (!file.exists()) {
-                            file.createNewFile();
-                        }
-
-                        //PrintWriter обеспечит возможности записи в файл
-                        PrintWriter out = new PrintWriter(file.getAbsoluteFile());
-
-                        try {
-                            float randnum;
-                            //Записываем текст в файл
-                            out.println(pa + " <== N");
-                            out.println(pb + " <== M");
-                            out.println("C, CX =   " + (float) ((int) (Math.random() * 10000)) / 100);
-                            randnum = (float) ((int) (Math.random() * 1000)) / 100;
-                            for (int i = 0; i < a; i++) {
-                                out.print("\t" + randnum);
-                            }
-                            out.println("\nDN");
-                            randnum = (float) ((int) (Math.random() * 1000)) / 100;
-                            for (int i = 0; i < a; i++) {
-                                out.print("\t" + randnum);
-                            }
-                            out.println("\nDV");
-                            randnum = (float) ((int) (Math.random() * 1000)) / 100;
-                            for (int i = 0; i < a; i++) {
-                                out.print("\t" + randnum);
-                            }
-                            out.println("\nBN");
-                            randnum = (float) ((int) (Math.random() * 1000)) / 100;
-                            for (int i = 0; i < b; i++) {
-                                out.print("\t" + randnum);
-                            }
-                            out.println("\nBV");
-                            randnum = (float) ((int) (Math.random() * 1000)) / 100;
-                            for (int i = 0; i < b; i++) {
-                                out.print("\t" + randnum);
-                            }
-                            out.println("\nA");
-                            for (int i = 0; i < a; i++) {
-                                for (int j = 0; j < b; j++) {
-                                    randnum = (float) ((int) (Math.random() * 1000)) / 100;
-                                    out.print("\t" + randnum);
-                                }
-                                out.println("");
-                            }
-                            out.println("X");
-                            randnum = (float) ((int) (Math.random() * 1000)) / 100;
-                            for (int i = 0; i < a; i++) {
-                                out.print("\t" + randnum);
-                            }
-                            out.println("\nXopt");
-                            randnum = (float) ((int) (Math.random() * 1000)) / 100;
-                            for (int i = 0; i < a; i++) {
-                                out.print("\t" + randnum);
-                            }
-                            out.println("\nB");
-                            randnum = (float) ((int) (Math.random() * 1000)) / 100;
-                            for (int i = 0; i < b; i++) {
-                                out.print("\t" + randnum);
-                            }
-
-                        } finally {
-                            //После чего мы должны закрыть файл
-                            //Иначе файл не запишется
-                            out.close();
-                        }
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
-                    }
-                }
-                if (vp1 == v1 && vp2 == v2 && vpt == v3) {
+                if (vp1 == v1 && vp2 == v2) {
                     exist = true;
                 }
-                if (v1 == 1 && v2 == 1 && v3 == 1) {
+                if (v1 == 1 && v2 == 1) {
                     exist = true;
                 }
             }
