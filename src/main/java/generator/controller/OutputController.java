@@ -1,4 +1,4 @@
-package main.java.generator.controller;
+package generator.controller;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;

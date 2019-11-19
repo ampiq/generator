@@ -1,4 +1,4 @@
-package main.java.generator.controller;
+package generator.controller;
 
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.collections.FXCollections;
@@ -15,7 +15,7 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.stage.Stage;
-import main.java.generator.GeneratingProcessor;
+import generator.GeneratingProcessor;
 
 import java.io.IOException;
 import java.util.List;

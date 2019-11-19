@@ -1,4 +1,4 @@
-package main.java.generator;
+package generator;
 
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
