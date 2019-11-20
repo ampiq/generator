@@ -1,8 +1,12 @@
 package generator.controller;
 
 import javafx.beans.property.ReadOnlyObjectWrapper;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.Event;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -13,10 +17,13 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.stage.Stage;
 import generator.GeneratingProcessor;
+import javafx.util.Callback;
 
+import javax.swing.event.ChangeEvent;
 import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
@@ -33,6 +40,9 @@ public class InputController {
 
     @FXML
     private Button nextButton;
+
+    @FXML
+    private Button saveDataButton;
 
     @FXML
     private TableView<double[]> matrixb;
@@ -67,9 +77,11 @@ public class InputController {
 
     @FXML
     void initialize() {
+
         Alert alertError = new Alert(Alert.AlertType.ERROR);
         planp.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
         planp.setEditable(true);
+
         matrixb.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
         planp.getSelectionModel().setCellSelectionEnabled(true);
         matrixb.getSelectionModel().setCellSelectionEnabled(true);
@@ -104,24 +116,22 @@ public class InputController {
                 int a = Integer.parseInt(valueM.getText());
                 int b = Integer.parseInt(valueN.getText());
 
-                planp.getColumns().clear();
-                matrixb.getColumns().clear();
-                planp.getItems().clear();
-                matrixb.getItems().clear();
-
                 inter1.setText("Количество временных интервалов: (" + vp1 + " из " + v1 + ")");
                 inter2.setText("Количество решаемых задач: (" + (vp2) + " из " + v2 + ")");
-                if (vp1 <= v1 && v2 == vp2) {
-                    vp1++;
-                    vp2 = 1;
-                } else {
-                    vp2++;
-                }
+
 
                 planp.getColumns().setAll(createColumns());
-                planp.setItems(generateData(1, Integer.parseInt(valueN.getText())));
                 matrixb.getColumns().setAll(createColumns());
-                matrixb.setItems(generateData(Integer.parseInt(valueM.getText()), Integer.parseInt(valueN.getText())));
+                if(vp1 == 1 && vp2 == 1)
+                {
+                    planp.setItems(generateDataInitial(1, Integer.parseInt(valueN.getText())));
+                    matrixb.setItems(generateDataInitial(Integer.parseInt(valueM.getText()), Integer.parseInt(valueN.getText())));
+                }
+                else
+                {
+//                    planp.setItems(generateData());
+//                    matrixb.setItems(generateData());
+                }
 
                 double[][] tableAsArray = getTableAsArray(matrixb);
                 for (int i = 0; i < tableAsArray.length; i++) {
@@ -139,6 +149,13 @@ public class InputController {
                 valueN.setText(valueM.getText());
                 valueM.clear();
 
+                if (vp1 <= v1 && v2 == vp2) {
+                    vp1++;
+                    vp2 = 1;
+                } else {
+                    vp2++;
+                }
+
                 if (vp1 == v1 && vp2 == v2) {
                     exist = true;
                 }
@@ -147,18 +164,28 @@ public class InputController {
                 }
             }
         });
+
+        saveDataButton.setOnAction(event -> {
+            System.out.println(matrixb.getItems().get(0)[0] + ", "
+                    + matrixb.getItems().get(0)[1] + ", "
+                    + matrixb.getItems().get(1)[0] + ", "
+                    + matrixb.getItems().get(1)[1]);
+
+        });
     }
 
-    private ObservableList<double[]> generateData(int nValue, int mValue) {
+
+
+    private ObservableList<double[]> generateDataInitial(int nValue, int mValue)
+    {
         return FXCollections.observableArrayList(
                 IntStream.range(0, nValue)
-                        .mapToObj(r ->
-                                IntStream.range(0, mValue)
-//                                        .mapToDouble(c -> ThreadLocalRandom.current().nextInt(1, 20))
-                                        .mapToDouble(c -> 3)
-                                        .toArray()
-                        ).collect(Collectors.toList())
+                        .mapToObj(r -> IntStream.range(0, mValue).mapToDouble(c -> 0).toArray()).collect(Collectors.toList())
         );
+    }
+
+    private ObservableList<double[]> generateData() {
+        return FXCollections.observableArrayList(planp.getItems());
     }
 
     private List<TableColumn<double[], String>> createColumns() {
@@ -171,6 +198,8 @@ public class InputController {
         TableColumn<double[], String> col = new TableColumn<>("C" + (c + 1));
         col.setCellValueFactory(param -> new ReadOnlyObjectWrapper<>(String.valueOf(param.getValue()[c])));
         col.setCellFactory(TextFieldTableCell.forTableColumn());
+        col.setOnEditCommit(event ->
+                event.getTableView().getItems().get(event.getTablePosition().getRow())[c] = Integer.parseInt(event.getNewValue()));
         return col;
     }
 
