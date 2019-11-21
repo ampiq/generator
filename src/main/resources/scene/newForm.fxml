@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.AnchorPane?>
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="793.0" prefWidth="450.0" style="-fx-background-color: #D2D2D2;" xmlns="http://javafx.com/javafx/8.0.172-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="generator.controller.OutputController">
+   <children>
+      <AnchorPane layoutY="411.0" prefHeight="142.0" prefWidth="450.0" style="-fx-background-color: #666666;" AnchorPane.bottomAnchor="240.0">
+         <children>
+            <TableView fx:id="matrixb" prefHeight="142.0" prefWidth="450.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+         </children>
+      </AnchorPane>
+      <AnchorPane layoutY="234.0" prefHeight="136.0" prefWidth="450.0" style="-fx-background-color: #666666;" AnchorPane.bottomAnchor="423.0">
+         <children>
+            <TableView fx:id="planp" prefHeight="61.0" prefWidth="450.0" AnchorPane.bottomAnchor="75.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+         </children>
+      </AnchorPane>
+      <Button fx:id="nextButton" layoutX="366.0" layoutY="555.0" mnemonicParsing="false" prefHeight="31.0" prefWidth="70.0" text="Next" AnchorPane.bottomAnchor="14.0" AnchorPane.rightAnchor="14.0" />
+      <Label layoutX="15.0" layoutY="203.0" text="План P" AnchorPane.bottomAnchor="569.0" />
+      <Label layoutX="15.0" layoutY="380.0" text="Матрица D" AnchorPane.bottomAnchor="392.0" />
+      <Label layoutX="15.0" layoutY="567.0" text="Вектор В результат" />
+      <AnchorPane layoutY="588.0" prefHeight="142.0" prefWidth="450.0" style="-fx-background-color: #666666;" AnchorPane.bottomAnchor="55.0">
+         <children>
+            <TableView fx:id="vectorb1" prefHeight="142.0" prefWidth="450.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+         </children>
+      </AnchorPane>
+      <Label layoutX="16.0" layoutY="23.0" text="Матрица F" />
+      <TableView fx:id="matrixb" layoutY="52.0" prefHeight="142.0" prefWidth="450.0" />
+   </children>
+</AnchorPane>
