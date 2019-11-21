@@ -1,5 +1,10 @@
 package generator.controller;
 
+import javafx.application.Platform;
+import javafx.beans.property.ReadOnlyObjectWrapper;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableArray;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
@@ -7,8 +12,14 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
+import javafx.scene.control.cell.TextFieldTableCell;
 
-import java.io.File;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 public class OutputController {
 
@@ -16,13 +27,13 @@ public class OutputController {
     private Button nextButton;
 
     @FXML
-    private TableView<Integer> matrixb;
+    private TableView<Double[]> matrixb;
 
     @FXML
     private Label inter1;
 
     @FXML
-    private TableView<Integer> vectorb1;
+    private TableView<Double[]> vectorb1;
 
     @FXML
     private Label inter2;
@@ -34,7 +45,7 @@ public class OutputController {
     private TextField valueM;
 
     @FXML
-    private TableView<Integer> planp;
+    private TableView<Double[]> planp;
 
     @FXML
     private TextField value1Text;
@@ -48,6 +59,12 @@ public class OutputController {
     private int val;
     private boolean exist = false;
 
+    private List<Double[][]> matricesB;
+
+    private List<Double[][]> plansP;
+
+    private List<Double[]> result;
+
     @FXML
     void initialize() {
         Alert alertError = new Alert(Alert.AlertType.ERROR);
@@ -59,6 +76,8 @@ public class OutputController {
         vectorb1.getSelectionModel().setCellSelectionEnabled(true);
 
         nextButton.setOnAction(event -> {
+            System.out.println(vp1);
+            System.out.println(vp2);
             String value1 = valueM.getText();
             String value2 = valueN.getText();
             String value3 = value1Text.getText();
@@ -96,6 +115,13 @@ public class OutputController {
                 inter1.setText("Количество временных интервалов: (" + vp1 + " из " + v1 + ")");
                 inter2.setText("Количество решаемых задач: (" + (vp2) + " из " + v2 + ")");
 
+                planp.getColumns().setAll(createColumns());
+                planp.setItems(receiveData(plansP.get(vp1)));
+                matrixb.getColumns().setAll(createColumns());
+                matrixb.setItems(receiveData(matricesB.get(vp2)));
+                vectorb1.getColumns().setAll(createColumns());
+                vectorb1.setItems(receiveDataForResult(result.get(vp1 +vp2 - 2)));
+
                 if (vp1 == v1 && v2 == vp2) {
                     vpt++;
                     vp1 = 1;
@@ -108,28 +134,6 @@ public class OutputController {
                     vp2++;
                 }
 
-                while (pa <= a) {
-                    String str = Integer.toString(pa);
-                    TableColumn tableColumn = new TableColumn(str);
-                    planp.getColumns().addAll(tableColumn);
-                    matrixb.getColumns().addAll(tableColumn);
-                    pa++;
-                }
-
-                val = 1 + (int) (Math.random() * 6);
-                for (int i = 1; i <= val; i++) {
-                    String str = Integer.toString(i);
-                    TableColumn tableColumn = new TableColumn(str);
-                    vectorb1.getColumns().addAll(tableColumn);
-                }
-
-
-                planp.getItems().addAll(pb);
-                while (pb <= b) {
-                    matrixb.getItems().addAll(pb);
-                    vectorb1.getItems().addAll(pb);
-                    pb++;
-                }
                 if (vp1 == v1 && vp2 == v2) {
                     exist = true;
                 }
@@ -138,5 +142,70 @@ public class OutputController {
                 }
             }
         });
+    }
+
+    private ObservableList<double[]> generateData(int nValue, int mValue) {
+        return FXCollections.observableArrayList(
+                IntStream.range(0, nValue)
+                        .mapToObj(r ->
+                                        IntStream.range(0, mValue)
+//                                        .mapToDouble(c -> ThreadLocalRandom.current().nextInt(1, 20))
+                                                .mapToDouble(c -> 3)
+                                                .toArray()
+                        ).collect(Collectors.toList())
+        );
+    }
+
+    private List<TableColumn<Double[], String>> createColumns() {
+        return IntStream.range(0, Integer.parseInt(valueN.getText()))
+                .mapToObj(this::createColumn)
+                .collect(Collectors.toList());
+    }
+
+    private TableColumn<Double[], String> createColumn(int c) {
+        TableColumn<Double[], String> col = new TableColumn<>("C" + (c + 1));
+        col.setCellValueFactory(param -> new ReadOnlyObjectWrapper<>(String.valueOf(param.getValue()[c])));
+        col.setCellFactory(TextFieldTableCell.forTableColumn());
+        return col;
+    }
+
+    private double[][] getTableAsArray(TableView<double[]> matrix) {
+        double[][] arr = new double[matrix.getItems().size()][matrix.getItems().get(0).length];
+        for (int i = 0; i < matrix.getItems().size(); i++) {
+            for (int j = 0; j < matrix.getItems().get(0).length; j++) {
+                arr[i][j] = matrix.getItems().get(i)[j];
+            }
+        }
+        return arr;
+    }
+
+    private TableView<Double[]> getArrayAsTable(Double[][] matrix) {
+        return new TableView<>(receiveData(matrix));
+    }
+
+    private ObservableList<Double[]> receiveDataForResult(Double[] arr) {
+        List<Double[]> list = new ArrayList<>();
+        list.add(arr);
+        return FXCollections.observableArrayList(list);
+    }
+
+    private ObservableList<Double[]> receiveData(Double[][] arr) {
+        ObservableList<Double[]> lst = FXCollections.observableArrayList();
+        for (int i = 0; i < arr.length; i++) {
+            lst.add(arr[i]);
+        }
+        return lst;
+    }
+
+    public void setMatricesB(List<Double[][]> matricesB) {
+        this.matricesB = matricesB;
+    }
+
+    public void setPlansP(List<Double[][]> plansP) {
+        this.plansP = plansP;
+    }
+
+    public void setResult(List<Double[]> result) {
+        this.result = result;
     }
 }

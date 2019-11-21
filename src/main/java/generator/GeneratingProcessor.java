@@ -2,6 +2,8 @@ package generator;
 
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class GeneratingProcessor {
     private static final int MMAX = 10;
@@ -23,6 +25,15 @@ public class GeneratingProcessor {
     private Double CX = 0d;
     private String buf = "";
     private String buff = "";
+
+    ////////////////
+    List<Double[]> result = new ArrayList<>();
+
+    public List<Double[]> getResult() {
+        return result;
+    }
+
+    ///////////////
 
     private int iterOut;
     private int interOut;
@@ -236,9 +247,12 @@ public class GeneratingProcessor {
                 fo.write('\n');
 
                 fo.write("B\n");
+                Double[] localAX = new Double[N[k]];
                 for (int j = 1; j <= N[k]; j++) {
                     fo.write("" + AX[j] + "   ");
+                    localAX[j - 1] = AX[j];
                 }
+                result.add(localAX);
                 fo.write('\n');
                 fo.close();
             }

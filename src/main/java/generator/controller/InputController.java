@@ -25,6 +25,8 @@ import javafx.util.Callback;
 
 import javax.swing.event.ChangeEvent;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
@@ -86,6 +88,8 @@ public class InputController {
         planp.getSelectionModel().setCellSelectionEnabled(true);
         matrixb.getSelectionModel().setCellSelectionEnabled(true);
         matrixb.setEditable(true);
+        List<Double[][]> matricesB = new ArrayList<>();
+        List<Double[][]> plansP = new ArrayList<>();
 
         nextButton.setOnAction(event -> {
             String value1 = valueM.getText();
@@ -102,7 +106,7 @@ public class InputController {
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-                openNewScene("/scene/output.fxml");
+                openNewSceneWithParam("/scene/output.fxml", matricesB, plansP, generate.getResult());
             }
 
             if (value1.equals("") || value2.equals("") || value3.equals("") || value4.equals("")) {
@@ -140,6 +144,11 @@ public class InputController {
 
                 double[] doubles = getTableAsArray(planp)[0];
                 System.arraycopy(doubles, 0, plan[vp1], 1, doubles.length);
+
+
+                    matricesB.add(getTableAsDoubleArray(matrixb));
+                    plansP.add(getTableAsDoubleArray(planp));
+
 
                 arrN[vp2] = a;
                 arrM[vp2] = b;
@@ -213,6 +222,16 @@ public class InputController {
         return arr;
     }
 
+    private Double[][] getTableAsDoubleArray(TableView<double[]> matrix) {
+        Double[][] arr = new Double[matrix.getItems().size()][matrix.getItems().get(0).length];
+        for (int i = 0; i < matrix.getItems().size(); i++) {
+            for (int j = 0; j < matrix.getItems().get(0).length; j++) {
+                arr[i][j] = matrix.getItems().get(i)[j];
+            }
+        }
+        return arr;
+    }
+
     private void openNewScene(String window) {
         nextButton.getScene().getWindow().hide();
         FXMLLoader loader = new FXMLLoader();
@@ -223,6 +242,26 @@ public class InputController {
             e.printStackTrace();
         }
         Parent root = loader.getRoot();
+        Stage stage = new Stage();
+        stage.setScene(new Scene(root));
+        stage.showAndWait();
+    }
+
+    private void openNewSceneWithParam(String window, List<Double[][]> mtrcsB, List<Double[][]> mtrcsP, List<Double[]> res) {
+        nextButton.getScene().getWindow().hide();
+        FXMLLoader loader = new FXMLLoader();
+        loader.setLocation((getClass().getResource(window)));
+        try {
+            loader.load();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        Parent root = loader.getRoot();
+        OutputController oc = loader.getController();
+        oc.setMatricesB(mtrcsB);
+        oc.setPlansP(mtrcsP);
+        oc.setResult(res);
+        loader.setController(oc);
         Stage stage = new Stage();
         stage.setScene(new Scene(root));
         stage.showAndWait();
