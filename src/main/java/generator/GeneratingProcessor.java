@@ -53,7 +53,9 @@ public class GeneratingProcessor {
     private int[] mOut;
     private int[] nOut;
 
-    public GeneratingProcessor(Integer iterOut, Integer interOut, double[][][] dMatrixOut, double[][] planOut, int[] mOut, int[] nOut, int l, int k) {
+    private Double[] previousResult;
+
+    public GeneratingProcessor(Integer iterOut, Integer interOut, double[][][] dMatrixOut, double[][] planOut, int[] mOut, int[] nOut, int l, int k, Double[] previousResult) {
         this.iterOut = iterOut;
         this.interOut = interOut;
         this.dMatrixOut = dMatrixOut;
@@ -62,6 +64,7 @@ public class GeneratingProcessor {
         this.nOut = nOut;
         this.l = l;
         this.k = k;
+        this.previousResult = previousResult;
     }
 
     private static double rand1(double rfrom, double rto) {
@@ -109,15 +112,8 @@ public class GeneratingProcessor {
                 buf = "" + k;
                 fo = new FileWriter("out" + buff + "_" + buf + ".txt");
                 if(l == 1) {
-                    if(k == 1)
-                    {
-                        N[k] = nOut[k];
-                    }
-                    else
-                    {
-                        N[k] = M[k - 1];
-                    }
                     M[k] = mOut[k];
+                    N[k] = nOut[k];
                     fo.write(N[k] + "  <==N" + '\n');
                     fo.write(M[k] + "  <==N" + '\n');
 
@@ -126,11 +122,11 @@ public class GeneratingProcessor {
                         return;
                     }
                 }
-                if(k == 1) {
+
                     for(int j = 1; j <= N[k]; j++) {
-                        X[j] = planOut[l][j];
+                        X[j] = planOut[k][j];
                     }
-                }
+
 
                 for (int j = 1; j <= N[k]; j++) {
                     if(k == 1) {
@@ -153,7 +149,8 @@ public class GeneratingProcessor {
                     else {
                         DN[j]=BN[j];
                         DV[j]=BV[j];
-                        X[j]=AX[j]; //+DB[j] before
+//                        X[j]=AX[j]; //+DB[j] before
+                        X[j] = previousResult[j - 1];
                         if(X[j]<(DN[j]+0.35*(DV[j]-DN[j])))
                         {
                             DEL[j]=rand1(DN[j]+0.25*(DV[j]-DN[j]),DN[j]+0.45*(DV[j]-DN[j]));

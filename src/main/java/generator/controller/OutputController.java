@@ -85,11 +85,11 @@ public class OutputController {
         vectorb1.getSelectionModel().setCellSelectionEnabled(true);
 
         planp.getColumns().setAll(createColumns());
-        planp.setItems(receiveData(plansP.get(vp1)));
+        planp.setItems(receiveData(plansP.get(l - 1)));
         matrixb.getColumns().setAll(createColumns());
-        matrixb.setItems(receiveData(matricesB.get(vp2)));
-        vectorb1.getColumns().setAll(createColumns());
-        vectorb1.setItems(receiveDataForResult(result.get(vp1 + vp2)));
+        matrixb.setItems(receiveData(matricesB.get(k - 1)));
+        vectorb1.getColumns().setAll(createColumnsForB());
+        vectorb1.setItems(receiveDataForResult(result.get(0))); //TODO 2 - временной интервал
     }
 
     private ObservableList<double[]> generateData(int nValue, int mValue) {
@@ -102,6 +102,12 @@ public class OutputController {
                                                 .toArray()
                         ).collect(Collectors.toList())
         );
+    }
+
+    private List<TableColumn<Double[], String>> createColumnsForB() {
+        return IntStream.range(0, Integer.parseInt(valueM.getText()))
+                .mapToObj(this::createColumn)
+                .collect(Collectors.toList());
     }
 
     private List<TableColumn<Double[], String>> createColumns() {
@@ -171,5 +177,13 @@ public class OutputController {
 
     public void setValue2Text(String value2Text) {
         this.value2Text.setText(value2Text);
+    }
+
+    public void setL(int l) {
+        this.l = l;
+    }
+
+    public void setK(int k) {
+        this.k = k;
     }
 }

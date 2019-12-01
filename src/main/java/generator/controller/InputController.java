@@ -84,6 +84,8 @@ public class InputController {
     private int currentInterval = 1;
     private int currentZadacha = 1;
 
+    private List<Double[]> resultB = new ArrayList<>();
+
     List<Dimension> dimensions = new ArrayList<>();
     @FXML
     void initialize() {
@@ -241,18 +243,18 @@ public class InputController {
 
             double[][] tableAsArray = getTableAsArray(matrixb);
             for (int i = 0; i < tableAsArray.length; i++) {
-                System.arraycopy(tableAsArray[i], 0, bMatrix[vp2][i + 1], 1, tableAsArray[0].length);
+                System.arraycopy(tableAsArray[i], 0, bMatrix[currentZadacha][i + 1], 1, tableAsArray[0].length);
             }
 
             double[] doubles = getTableAsArray(planp)[0];
-            System.arraycopy(doubles, 0, plan[vp1], 1, doubles.length);
+            System.arraycopy(doubles, 0, plan[currentZadacha], 1, doubles.length);
 
             matricesB.add(getTableAsDoubleArray(matrixb));
             plansP.add(getTableAsDoubleArray(planp));
-            arrN[currentInterval] = dimensions.get(currentInterval - 1).nValue;
-            arrM[currentInterval] = dimensions.get(currentInterval - 1).mValue;
+            arrN[currentZadacha] = dimensions.get(currentZadacha - 1).nValue;
+            arrM[currentZadacha] = dimensions.get(currentZadacha - 1).mValue;
 
-            GeneratingProcessor generate = new GeneratingProcessor(iter, inter, bMatrix, plan, arrN, arrM, currentInterval, currentZadacha);
+            GeneratingProcessor generate = new GeneratingProcessor(iter, inter, bMatrix, plan, arrM, arrN, currentInterval, currentZadacha, currentZadacha == 1 ? null : resultB.get(currentZadacha - 2)); //TODO
             try {
                 generate.process();
             } catch (IOException e) {
@@ -341,11 +343,14 @@ public class InputController {
         oc.setMatricesB(mtrcsB);
         oc.setPlansP(mtrcsP);
         List<Double[]> result = generatingProcessor.getResult();
+        resultB.add(result.get(0));
         oc.setResult(result);
         oc.setValueN(valueN.getText());
         oc.setValueM(valueM.getText());
         oc.setValue1Text(value1Text.getText());
         oc.setValue2Text(value2Text.getText());
+        oc.setL(currentInterval);
+        oc.setK(currentZadacha);
         oc.compute();
         loader.setController(oc);
         Stage stage = new Stage();
