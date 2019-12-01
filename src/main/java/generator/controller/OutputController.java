@@ -53,11 +53,8 @@ public class OutputController {
     @FXML
     private TextField value2Text;
 
-    private int vp1 = 1;
-    private int vp2 = 1;
-    private int vpt = 1;
-    private int val;
-    private boolean exist = false;
+    private int vp1 = 0;
+    private int vp2 = 0;
 
     private List<Double[][]> matricesB;
 
@@ -65,9 +62,21 @@ public class OutputController {
 
     private List<Double[]> result;
 
+    private int l;
+
+    private int k;
+
     @FXML
     void initialize() {
-        Alert alertError = new Alert(Alert.AlertType.ERROR);
+        value1Text.setDisable(true);
+        value2Text.setDisable(true);
+        valueM.setDisable(true);
+        valueN.setDisable(true);
+    }
+
+    void compute() {
+
+
         planp.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
         matrixb.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
         vectorb1.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
@@ -75,73 +84,12 @@ public class OutputController {
         matrixb.getSelectionModel().setCellSelectionEnabled(true);
         vectorb1.getSelectionModel().setCellSelectionEnabled(true);
 
-        nextButton.setOnAction(event -> {
-            System.out.println(vp1);
-            System.out.println(vp2);
-            String value1 = valueM.getText();
-            String value2 = valueN.getText();
-            String value3 = value1Text.getText();
-            String value4 = value2Text.getText();
-
-            if (exist) {
-                Alert alertError2 = new Alert(Alert.AlertType.INFORMATION);
-                alertError2.setTitle("Завершение");
-                alertError2.setHeaderText(null);
-                alertError2.setContentText("Программа успешно завершила работу");
-                alertError2.showAndWait();
-
-                nextButton.getScene().getWindow().hide();
-            }
-
-            if (value1.equals("") || value2.equals("") || value3.equals("") || value4.equals("")) {
-                alertError.setTitle("Не все данные введены");
-                alertError.setHeaderText(null);
-                alertError.setContentText("Заполните поля интервалов и задач");
-                alertError.showAndWait();
-            } else {
-                int v1 = Integer.parseInt(value1Text.getText());
-                int v2 = Integer.parseInt(value2Text.getText());
-                int a = Integer.parseInt(valueM.getText());
-                int b = Integer.parseInt(valueN.getText());
-                int pa = 1, pb = 1;
-
-                planp.getColumns().clear();
-                matrixb.getColumns().clear();
-                vectorb1.getColumns().clear();
-                planp.getItems().clear();
-                matrixb.getItems().clear();
-                vectorb1.getItems().clear();
-
-                inter1.setText("Количество временных интервалов: (" + vp1 + " из " + v1 + ")");
-                inter2.setText("Количество решаемых задач: (" + (vp2) + " из " + v2 + ")");
-
-                planp.getColumns().setAll(createColumns());
-                planp.setItems(receiveData(plansP.get(vp1)));
-                matrixb.getColumns().setAll(createColumns());
-                matrixb.setItems(receiveData(matricesB.get(vp2)));
-                vectorb1.getColumns().setAll(createColumns());
-                vectorb1.setItems(receiveDataForResult(result.get(vp1 +vp2 - 2)));
-
-                if (vp1 == v1 && v2 == vp2) {
-                    vpt++;
-                    vp1 = 1;
-                    vp2 = 0;
-                }
-                if (vp1 <= v1 && v2 == vp2) {
-                    vp1++;
-                    vp2 = 1;
-                } else {
-                    vp2++;
-                }
-
-                if (vp1 == v1 && vp2 == v2) {
-                    exist = true;
-                }
-                if (v1 == 1 && v2 == 1) {
-                    exist = true;
-                }
-            }
-        });
+        planp.getColumns().setAll(createColumns());
+        planp.setItems(receiveData(plansP.get(vp1)));
+        matrixb.getColumns().setAll(createColumns());
+        matrixb.setItems(receiveData(matricesB.get(vp2)));
+        vectorb1.getColumns().setAll(createColumns());
+        vectorb1.setItems(receiveDataForResult(result.get(vp1 + vp2)));
     }
 
     private ObservableList<double[]> generateData(int nValue, int mValue) {
@@ -184,9 +132,9 @@ public class OutputController {
     }
 
     private ObservableList<Double[]> receiveDataForResult(Double[] arr) {
-        List<Double[]> list = new ArrayList<>();
+        ObservableList<Double[]> list = FXCollections.observableArrayList();
         list.add(arr);
-        return FXCollections.observableArrayList(list);
+        return list;
     }
 
     private ObservableList<Double[]> receiveData(Double[][] arr) {
@@ -207,5 +155,21 @@ public class OutputController {
 
     public void setResult(List<Double[]> result) {
         this.result = result;
+    }
+
+    public void setValueN(String valueN) {
+        this.valueN.setText(valueN);
+    }
+
+    public void setValueM(String valueM) {
+        this.valueM.setText(valueM);
+    }
+
+    public void setValue1Text(String value1Text) {
+        this.value1Text.setText(value1Text);
+    }
+
+    public void setValue2Text(String value2Text) {
+        this.value2Text.setText(value2Text);
     }
 }

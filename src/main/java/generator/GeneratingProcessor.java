@@ -26,6 +26,17 @@ public class GeneratingProcessor {
     private String buf = "";
     private String buff = "";
 
+    public int getL() {
+        return l;
+    }
+
+    public int getK() {
+        return k;
+    }
+
+    private int l;
+    private int k;
+
     ////////////////
     List<Double[]> result = new ArrayList<>();
 
@@ -42,13 +53,15 @@ public class GeneratingProcessor {
     private int[] mOut;
     private int[] nOut;
 
-    public GeneratingProcessor(Integer iterOut, Integer interOut, double[][][] dMatrixOut, double[][] planOut, int[] mOut, int[] nOut) {
+    public GeneratingProcessor(Integer iterOut, Integer interOut, double[][][] dMatrixOut, double[][] planOut, int[] mOut, int[] nOut, int l, int k) {
         this.iterOut = iterOut;
         this.interOut = interOut;
         this.dMatrixOut = dMatrixOut;
         this.planOut = planOut;
         this.mOut = mOut;
         this.nOut = nOut;
+        this.l = l;
+        this.k = k;
     }
 
     private static double rand1(double rfrom, double rto) {
@@ -91,8 +104,7 @@ public class GeneratingProcessor {
         int inter = interOut;
         int iter = iterOut;
 
-        for(int l = 1;  l <= inter; l++) {
-            for(int k = 1; k <= iter; k++) {
+
                 buff = "" + l;
                 buf = "" + k;
                 fo = new FileWriter("out" + buff + "_" + buf + ".txt");
@@ -247,15 +259,13 @@ public class GeneratingProcessor {
                 fo.write('\n');
 
                 fo.write("B\n");
-                Double[] localAX = new Double[N[k]];
-                for (int j = 1; j <= N[k]; j++) {
+                Double[] localAX = new Double[M[k]];
+                for (int j = 1; j <= M[k]; j++) {
                     fo.write("" + AX[j] + "   ");
                     localAX[j - 1] = AX[j];
                 }
                 result.add(localAX);
                 fo.write('\n');
                 fo.close();
-            }
-        }
     }
 }

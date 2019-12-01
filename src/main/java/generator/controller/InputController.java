@@ -81,7 +81,10 @@ public class InputController {
     private int vp2 = 1;
     private boolean exist = false;
 
-    private boolean isSavePressed = false;
+    private int currentInterval = 1;
+    private int currentZadacha = 1;
+
+    List<Dimension> dimensions = new ArrayList<>();
     @FXML
     void initialize() {
 
@@ -97,87 +100,108 @@ public class InputController {
         List<Double[][]> plansP = new ArrayList<>();
 
         nextButton.setOnAction(event -> {
-            String value1 = valueM.getText();
-            String value2 = valueN.getText();
-            String value3 = value1Text.getText();
-            String value4 = value2Text.getText();
-            iter = Integer.parseInt(value1Text.getText());
-            inter = Integer.parseInt(value2Text.getText());
-
-            if (exist) {
-                GeneratingProcessor generate = new GeneratingProcessor(iter, inter, bMatrix, plan, arrN, arrM);
-                try {
-                    generate.process();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                openNewSceneWithParam("/scene/output.fxml", matricesB, plansP, generate.getResult());
-            }
-
-            if (value1.equals("") || value2.equals("") || value3.equals("") || value4.equals("")) {
-                alertError.setTitle("Не все данные введены");
-                alertError.setHeaderText(null);
-                alertError.setContentText("Заполните поля интервалов и задач");
-                alertError.showAndWait();
+            if(currentZadacha + 1 > Integer.parseInt(value2Text.getText())) {
+                ++currentInterval;
+                currentZadacha = 1;
             } else {
-                int v1 = Integer.parseInt(value1Text.getText());
-                int v2 = Integer.parseInt(value2Text.getText());
-                int a = Integer.parseInt(valueM.getText());
-                int b = Integer.parseInt(valueN.getText());
-
-                inter1.setText("Количество временных интервалов: (" + vp1 + " из " + v1 + ")");
-                inter2.setText("Количество решаемых задач: (" + (vp2) + " из " + v2 + ")");
-
-
-                planp.getColumns().setAll(createColumns());
-                matrixb.getColumns().setAll(createColumns());
-                ObservableList<double[]> copyMatrix = FXCollections.observableArrayList(matrixb.getItems());
-                if(vp1 == 1 && vp2 == 1)
-                {
-                    planp.setItems(generateDataInitial(1, Integer.parseInt(valueN.getText())));
-                    matrixb.setItems(generateDataInitial(Integer.parseInt(valueM.getText()), Integer.parseInt(valueN.getText())));
-                }
-                else
-                {
-//                    planp.setItems(generateData());
-//                    matrixb.setItems(generateData());
-                }
-
-                double[][] tableAsArray = getTableAsArray(matrixb);
-                for (int i = 0; i < tableAsArray.length; i++) {
-                    System.arraycopy(tableAsArray[i], 0, bMatrix[vp2][i + 1], 1, tableAsArray[0].length);
-                }
-
-                double[] doubles = getTableAsArray(planp)[0];
-                System.arraycopy(doubles, 0, plan[vp1], 1, doubles.length);
-
-
-                    matricesB.add(getTableAsDoubleArray(matrixb));
-                    plansP.add(getTableAsDoubleArray(planp));
-
-
-                arrN[vp2] = a;
-                arrM[vp2] = b;
-                value1Text.setDisable(true);
-                value2Text.setDisable(true);
-                valueN.setDisable(true);
-                valueN.setText(valueM.getText());
-                valueM.clear();
-
-                if (vp1 <= v1 && v2 == vp2) {
-                    vp1++;
-                    vp2 = 1;
-                } else {
-                    vp2++;
-                }
-
-                if (vp1 == v1 && vp2 == v2) {
-                    exist = true;
-                }
-                if (v1 == 1 && v2 == 1) {
-                    openNewScene("/scene/output.fxml");
-                }
+                ++currentZadacha;
             }
+
+            if(currentInterval == 1) {
+                valueN.setText(Integer.toString(dimensions.get(currentZadacha - 2).mValue));
+                valueM.setDisable(false);
+            } else {
+                valueN.setText(Integer.toString(dimensions.get(currentZadacha - 1).nValue));
+                valueM.setText(Integer.toString(dimensions.get(currentZadacha - 1).mValue));
+            }
+
+
+            planp.getColumns().clear();
+            matrixb.getColumns().clear();
+
+            inter1.setText("Количество временных интервалов: (" + currentInterval + " из " + value1Text.getText() + ")");
+            inter2.setText("Количество решаемых задач: (" + currentZadacha + " из " + value2Text.getText() + ")");
+//            String value1 = valueM.getText();
+//            String value2 = valueN.getText();
+//            String value3 = value1Text.getText();
+//            String value4 = value2Text.getText();
+//            iter = Integer.parseInt(value1Text.getText());
+//            inter = Integer.parseInt(value2Text.getText());
+//
+//            if (exist) {
+////                GeneratingProcessor generate = new GeneratingProcessor(iter, inter, bMatrix, plan, arrN, arrM);
+////                try {
+////                    generate.process();
+////                } catch (IOException e) {
+////                    e.printStackTrace();
+////                }
+////                openNewSceneWithParam("/scene/output.fxml", matricesB, plansP, generate.getResult());
+//            }
+//
+//            if (value1.equals("") || value2.equals("") || value3.equals("") || value4.equals("")) {
+//                alertError.setTitle("Не все данные введены");
+//                alertError.setHeaderText(null);
+//                alertError.setContentText("Заполните поля интервалов и задач");
+//                alertError.showAndWait();
+//            } else {
+//                int v1 = Integer.parseInt(value1Text.getText());
+//                int v2 = Integer.parseInt(value2Text.getText());
+//                int a = Integer.parseInt(valueM.getText());
+//                int b = Integer.parseInt(valueN.getText());
+//
+//                inter1.setText("Количество временных интервалов: (" + vp1 + " из " + v1 + ")");
+//                inter2.setText("Количество решаемых задач: (" + (vp2) + " из " + v2 + ")");
+//
+//
+//                planp.getColumns().setAll(createColumns());
+//                matrixb.getColumns().setAll(createColumns());
+//                ObservableList<double[]> copyMatrix = FXCollections.observableArrayList(matrixb.getItems());
+//                if(vp1 == 1 && vp2 == 1)
+//                {
+//                    planp.setItems(generateDataInitial(1, Integer.parseInt(valueN.getText())));
+//                    matrixb.setItems(generateDataInitial(Integer.parseInt(valueM.getText()), Integer.parseInt(valueN.getText())));
+//                }
+//                else
+//                {
+////                    planp.setItems(generateData());
+////                    matrixb.setItems(generateData());
+//                }
+//
+//                double[][] tableAsArray = getTableAsArray(matrixb);
+//                for (int i = 0; i < tableAsArray.length; i++) {
+//                    System.arraycopy(tableAsArray[i], 0, bMatrix[vp2][i + 1], 1, tableAsArray[0].length);
+//                }
+//
+//                double[] doubles = getTableAsArray(planp)[0];
+//                System.arraycopy(doubles, 0, plan[vp1], 1, doubles.length);
+//
+//
+//                    matricesB.add(getTableAsDoubleArray(matrixb));
+//                    plansP.add(getTableAsDoubleArray(planp));
+//
+//
+//                arrN[vp2] = a;
+//                arrM[vp2] = b;
+//                value1Text.setDisable(true);
+//                value2Text.setDisable(true);
+//                valueN.setDisable(true);
+//                valueN.setText(valueM.getText());
+//                valueM.clear();
+//
+//                if (vp1 <= v1 && v2 == vp2) {
+//                    vp1++;
+//                    vp2 = 1;
+//                } else {
+//                    vp2++;
+//                }
+//
+//                if (vp1 == v1 && vp2 == v2) {
+//                    exist = true;
+//                }
+//                if (v1 == 1 && v2 == 1) {
+//                    openNewScene("/scene/output.fxml");
+//                }
+//            }
         });
 
         showTableButton.setOnAction(event -> {
@@ -186,8 +210,14 @@ public class InputController {
             Integer mValue = Integer.parseInt(valueM.getText());
             Integer nValue = Integer.parseInt(valueN.getText());
 
-            inter1.setText("Количество временных интервалов: (" + vp1 + " из " + timeIntervals + ")");
-            inter2.setText("Количество решаемых задач: (" + (vp2) + " из " + problemsToBeSolved + ")");
+            if(currentInterval == 1) {
+                dimensions.add(new Dimension(mValue, nValue));
+            }
+
+            if(currentZadacha == 1 && currentInterval == 1) {
+                inter1.setText("Количество временных интервалов: (" + vp1 + " из " + timeIntervals + ")");
+                inter2.setText("Количество решаемых задач: (" + (vp2) + " из " + problemsToBeSolved + ")");
+            }
 
             planp.getColumns().setAll(createColumns());
             matrixb.getColumns().setAll(createColumns());
@@ -195,10 +225,10 @@ public class InputController {
             planp.setItems(generateDataInitial(1, nValue));
             matrixb.setItems(generateDataInitial(mValue, nValue));
 
-//            value1Text.setDisable(true);
-//            value2Text.setDisable(true);
-//            valueM.setDisable(true);
-//            valueN.setDisable(true);
+            value1Text.setDisable(true);
+            value2Text.setDisable(true);
+            valueM.setDisable(true);
+            valueN.setDisable(true);
         });
 
         saveDataButton.setOnAction(event -> {
@@ -206,6 +236,8 @@ public class InputController {
                     + matrixb.getItems().get(0)[1] + ", "
                     + matrixb.getItems().get(1)[0] + ", "
                     + matrixb.getItems().get(1)[1]);
+
+
 
             double[][] tableAsArray = getTableAsArray(matrixb);
             for (int i = 0; i < tableAsArray.length; i++) {
@@ -215,7 +247,19 @@ public class InputController {
             double[] doubles = getTableAsArray(planp)[0];
             System.arraycopy(doubles, 0, plan[vp1], 1, doubles.length);
 
+            matricesB.add(getTableAsDoubleArray(matrixb));
+            plansP.add(getTableAsDoubleArray(planp));
+            arrN[currentInterval] = dimensions.get(currentInterval - 1).nValue;
+            arrM[currentInterval] = dimensions.get(currentInterval - 1).mValue;
 
+            GeneratingProcessor generate = new GeneratingProcessor(iter, inter, bMatrix, plan, arrN, arrM, currentInterval, currentZadacha);
+            try {
+                generate.process();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            openNewSceneWithParam("/scene/output.fxml", matricesB, plansP, generate);
         });
     }
 
@@ -283,23 +327,39 @@ public class InputController {
         stage.showAndWait();
     }
 
-    private void openNewSceneWithParam(String window, List<Double[][]> mtrcsB, List<Double[][]> mtrcsP, List<Double[]> res) {
-        nextButton.getScene().getWindow().hide();
+    private void openNewSceneWithParam(String window, List<Double[][]> mtrcsB, List<Double[][]> mtrcsP, GeneratingProcessor generatingProcessor) {
+//        nextButton.getScene().getWindow().hide();
         FXMLLoader loader = new FXMLLoader();
         loader.setLocation((getClass().getResource(window)));
         try {
             loader.load();
         } catch (IOException e) {
-            e.printStackTrace();
+            System.out.println("ERRRROORRO");
         }
         Parent root = loader.getRoot();
         OutputController oc = loader.getController();
         oc.setMatricesB(mtrcsB);
         oc.setPlansP(mtrcsP);
-        oc.setResult(res);
+        List<Double[]> result = generatingProcessor.getResult();
+        oc.setResult(result);
+        oc.setValueN(valueN.getText());
+        oc.setValueM(valueM.getText());
+        oc.setValue1Text(value1Text.getText());
+        oc.setValue2Text(value2Text.getText());
+        oc.compute();
         loader.setController(oc);
         Stage stage = new Stage();
         stage.setScene(new Scene(root));
         stage.showAndWait();
+    }
+
+    class Dimension {
+        public int mValue;
+        public int nValue;
+
+        public Dimension(int m, int n) {
+            mValue = m;
+            nValue = n;
+        }
     }
 }
