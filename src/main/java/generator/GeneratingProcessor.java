@@ -77,7 +77,7 @@ public class GeneratingProcessor {
         double minVal = val[1];
         for(int i = 1; i <= size - 1; i++)
         {
-            if(val[i] <= minVal && val[i] != 0d) //TODO &&
+            if(val[i] <= minVal) //TODO &&
             {
                 minVal = val[i];
             }

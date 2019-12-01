@@ -19,6 +19,7 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
+import javafx.scene.layout.Background;
 import javafx.stage.Stage;
 import generator.GeneratingProcessor;
 import javafx.util.Callback;
@@ -45,6 +46,9 @@ public class InputController {
 
     @FXML
     private Button saveDataButton;
+
+    @FXML
+    private Button showTableButton;
 
     @FXML
     private TableView<double[]> matrixb;
@@ -77,6 +81,7 @@ public class InputController {
     private int vp2 = 1;
     private boolean exist = false;
 
+    private boolean isSavePressed = false;
     @FXML
     void initialize() {
 
@@ -126,6 +131,7 @@ public class InputController {
 
                 planp.getColumns().setAll(createColumns());
                 matrixb.getColumns().setAll(createColumns());
+                ObservableList<double[]> copyMatrix = FXCollections.observableArrayList(matrixb.getItems());
                 if(vp1 == 1 && vp2 == 1)
                 {
                     planp.setItems(generateDataInitial(1, Integer.parseInt(valueN.getText())));
@@ -174,11 +180,41 @@ public class InputController {
             }
         });
 
+        showTableButton.setOnAction(event -> {
+            Integer timeIntervals = Integer.parseInt(value1Text.getText());
+            Integer problemsToBeSolved = Integer.parseInt(value2Text.getText());
+            Integer mValue = Integer.parseInt(valueM.getText());
+            Integer nValue = Integer.parseInt(valueN.getText());
+
+            inter1.setText("Количество временных интервалов: (" + vp1 + " из " + timeIntervals + ")");
+            inter2.setText("Количество решаемых задач: (" + (vp2) + " из " + problemsToBeSolved + ")");
+
+            planp.getColumns().setAll(createColumns());
+            matrixb.getColumns().setAll(createColumns());
+
+            planp.setItems(generateDataInitial(1, nValue));
+            matrixb.setItems(generateDataInitial(mValue, nValue));
+
+//            value1Text.setDisable(true);
+//            value2Text.setDisable(true);
+//            valueM.setDisable(true);
+//            valueN.setDisable(true);
+        });
+
         saveDataButton.setOnAction(event -> {
             System.out.println(matrixb.getItems().get(0)[0] + ", "
                     + matrixb.getItems().get(0)[1] + ", "
                     + matrixb.getItems().get(1)[0] + ", "
                     + matrixb.getItems().get(1)[1]);
+
+            double[][] tableAsArray = getTableAsArray(matrixb);
+            for (int i = 0; i < tableAsArray.length; i++) {
+                System.arraycopy(tableAsArray[i], 0, bMatrix[vp2][i + 1], 1, tableAsArray[0].length);
+            }
+
+            double[] doubles = getTableAsArray(planp)[0];
+            System.arraycopy(doubles, 0, plan[vp1], 1, doubles.length);
+
 
         });
     }
