@@ -38,9 +38,9 @@ public class GeneratingProcessor {
     private int k;
 
     ////////////////
-    List<Double[]> result = new ArrayList<>();
+    Double[] result;
 
-    public List<Double[]> getResult() {
+    public Double[] getResult() {
         return result;
     }
 
@@ -261,7 +261,7 @@ public class GeneratingProcessor {
                     fo.write("" + AX[j] + "   ");
                     localAX[j - 1] = AX[j];
                 }
-                result.add(localAX);
+                result = localAX;
                 fo.write('\n');
                 fo.close();
     }

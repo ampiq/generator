@@ -117,93 +117,11 @@ public class InputController {
                 valueM.setText(Integer.toString(dimensions.get(currentZadacha - 1).mValue));
             }
 
-
             planp.getColumns().clear();
             matrixb.getColumns().clear();
 
             inter1.setText("Количество временных интервалов: (" + currentInterval + " из " + value1Text.getText() + ")");
             inter2.setText("Количество решаемых задач: (" + currentZadacha + " из " + value2Text.getText() + ")");
-//            String value1 = valueM.getText();
-//            String value2 = valueN.getText();
-//            String value3 = value1Text.getText();
-//            String value4 = value2Text.getText();
-//            iter = Integer.parseInt(value1Text.getText());
-//            inter = Integer.parseInt(value2Text.getText());
-//
-//            if (exist) {
-////                GeneratingProcessor generate = new GeneratingProcessor(iter, inter, bMatrix, plan, arrN, arrM);
-////                try {
-////                    generate.process();
-////                } catch (IOException e) {
-////                    e.printStackTrace();
-////                }
-////                openNewSceneWithParam("/scene/output.fxml", matricesB, plansP, generate.getResult());
-//            }
-//
-//            if (value1.equals("") || value2.equals("") || value3.equals("") || value4.equals("")) {
-//                alertError.setTitle("Не все данные введены");
-//                alertError.setHeaderText(null);
-//                alertError.setContentText("Заполните поля интервалов и задач");
-//                alertError.showAndWait();
-//            } else {
-//                int v1 = Integer.parseInt(value1Text.getText());
-//                int v2 = Integer.parseInt(value2Text.getText());
-//                int a = Integer.parseInt(valueM.getText());
-//                int b = Integer.parseInt(valueN.getText());
-//
-//                inter1.setText("Количество временных интервалов: (" + vp1 + " из " + v1 + ")");
-//                inter2.setText("Количество решаемых задач: (" + (vp2) + " из " + v2 + ")");
-//
-//
-//                planp.getColumns().setAll(createColumns());
-//                matrixb.getColumns().setAll(createColumns());
-//                ObservableList<double[]> copyMatrix = FXCollections.observableArrayList(matrixb.getItems());
-//                if(vp1 == 1 && vp2 == 1)
-//                {
-//                    planp.setItems(generateDataInitial(1, Integer.parseInt(valueN.getText())));
-//                    matrixb.setItems(generateDataInitial(Integer.parseInt(valueM.getText()), Integer.parseInt(valueN.getText())));
-//                }
-//                else
-//                {
-////                    planp.setItems(generateData());
-////                    matrixb.setItems(generateData());
-//                }
-//
-//                double[][] tableAsArray = getTableAsArray(matrixb);
-//                for (int i = 0; i < tableAsArray.length; i++) {
-//                    System.arraycopy(tableAsArray[i], 0, bMatrix[vp2][i + 1], 1, tableAsArray[0].length);
-//                }
-//
-//                double[] doubles = getTableAsArray(planp)[0];
-//                System.arraycopy(doubles, 0, plan[vp1], 1, doubles.length);
-//
-//
-//                    matricesB.add(getTableAsDoubleArray(matrixb));
-//                    plansP.add(getTableAsDoubleArray(planp));
-//
-//
-//                arrN[vp2] = a;
-//                arrM[vp2] = b;
-//                value1Text.setDisable(true);
-//                value2Text.setDisable(true);
-//                valueN.setDisable(true);
-//                valueN.setText(valueM.getText());
-//                valueM.clear();
-//
-//                if (vp1 <= v1 && v2 == vp2) {
-//                    vp1++;
-//                    vp2 = 1;
-//                } else {
-//                    vp2++;
-//                }
-//
-//                if (vp1 == v1 && vp2 == v2) {
-//                    exist = true;
-//                }
-//                if (v1 == 1 && v2 == 1) {
-//                    openNewScene("/scene/output.fxml");
-//                }
-//            }
         });
 
         showTableButton.setOnAction(event -> {
@@ -234,10 +152,12 @@ public class InputController {
         });
 
         saveDataButton.setOnAction(event -> {
-            System.out.println(matrixb.getItems().get(0)[0] + ", "
-                    + matrixb.getItems().get(0)[1] + ", "
-                    + matrixb.getItems().get(1)[0] + ", "
-                    + matrixb.getItems().get(1)[1]);
+            System.out.println("saveDataButton");
+            System.out.println(" ");
+//            System.out.println(matrixb.getItems().get(0)[0] + ", "
+//                    + matrixb.getItems().get(0)[1] + ", "
+//                    + matrixb.getItems().get(1)[0] + ", "
+//                    + matrixb.getItems().get(1)[1]);
 
 
 
@@ -254,15 +174,58 @@ public class InputController {
             arrN[currentZadacha] = dimensions.get(currentZadacha - 1).nValue;
             arrM[currentZadacha] = dimensions.get(currentZadacha - 1).mValue;
 
+            System.out.println(Arrays.toString(bMatrix[currentInterval][currentZadacha]));
+            System.out.println(Arrays.toString(plan[currentZadacha]));
+            System.out.println(Arrays.toString(arrN));
+            System.out.println(Arrays.toString(arrM));
+            System.out.println(currentInterval);
+            System.out.println(currentZadacha);
+
             GeneratingProcessor generate = new GeneratingProcessor(iter, inter, bMatrix, plan, arrM, arrN, currentInterval, currentZadacha, currentZadacha == 1 ? null : resultB.get(currentZadacha - 2)); //TODO
+            System.out.println(generate);
             try {
                 generate.process();
             } catch (IOException e) {
                 e.printStackTrace();
             }
+            Double[] result = generate.getResult();
+            resultB.add(result);
+//            if (currentZadacha == 1) {
+//                System.out.println("Nothing");
+//            } else {
+//                System.out.println(Arrays.toString(resultB.get(currentZadacha - 2)));
+//            }
 
-            openNewSceneWithParam("/scene/output.fxml", matricesB, plansP, generate);
+            openNewSceneWithParam("/scene/output.fxml", matricesB, plansP, result);
         });
+    }
+
+    private void openNewSceneWithParam(String window, List<Double[][]> mtrcsB, List<Double[][]> mtrcsP, Double[] result) {
+        FXMLLoader loader = new FXMLLoader();
+        loader.setLocation((getClass().getResource(window)));
+        try {
+            loader.load();
+        } catch (IOException e) {
+            System.out.println("ERRRROORRO");
+        }
+        Parent root = loader.getRoot();
+        OutputController oc = loader.getController();
+        oc.setMatricesB(mtrcsB);
+        oc.setPlansP(mtrcsP);
+//        Double[] result = generatingProcessor.getResult();
+//        resultB.add(result);
+        oc.setResult(result);
+        oc.setValueN(valueN.getText());
+        oc.setValueM(valueM.getText());
+        oc.setValue1Text(value1Text.getText());
+        oc.setValue2Text(value2Text.getText());
+        oc.setL(currentInterval);
+        oc.setK(currentZadacha);
+        oc.compute();
+        loader.setController(oc);
+        Stage stage = new Stage();
+        stage.setScene(new Scene(root));
+        stage.showAndWait();
     }
 
 
@@ -324,35 +287,6 @@ public class InputController {
             e.printStackTrace();
         }
         Parent root = loader.getRoot();
-        Stage stage = new Stage();
-        stage.setScene(new Scene(root));
-        stage.showAndWait();
-    }
-
-    private void openNewSceneWithParam(String window, List<Double[][]> mtrcsB, List<Double[][]> mtrcsP, GeneratingProcessor generatingProcessor) {
-//        nextButton.getScene().getWindow().hide();
-        FXMLLoader loader = new FXMLLoader();
-        loader.setLocation((getClass().getResource(window)));
-        try {
-            loader.load();
-        } catch (IOException e) {
-            System.out.println("ERRRROORRO");
-        }
-        Parent root = loader.getRoot();
-        OutputController oc = loader.getController();
-        oc.setMatricesB(mtrcsB);
-        oc.setPlansP(mtrcsP);
-        List<Double[]> result = generatingProcessor.getResult();
-        resultB.add(result.get(0));
-        oc.setResult(result);
-        oc.setValueN(valueN.getText());
-        oc.setValueM(valueM.getText());
-        oc.setValue1Text(value1Text.getText());
-        oc.setValue2Text(value2Text.getText());
-        oc.setL(currentInterval);
-        oc.setK(currentZadacha);
-        oc.compute();
-        loader.setController(oc);
         Stage stage = new Stage();
         stage.setScene(new Scene(root));
         stage.showAndWait();

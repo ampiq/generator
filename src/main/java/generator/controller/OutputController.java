@@ -60,7 +60,7 @@ public class OutputController {
 
     private List<Double[][]> plansP;
 
-    private List<Double[]> result;
+    private Double[] result;
 
     private int l;
 
@@ -84,12 +84,14 @@ public class OutputController {
         matrixb.getSelectionModel().setCellSelectionEnabled(true);
         vectorb1.getSelectionModel().setCellSelectionEnabled(true);
 
+//        if (l == 1) {
         planp.getColumns().setAll(createColumns());
         planp.setItems(receiveData(plansP.get(l - 1)));
         matrixb.getColumns().setAll(createColumns());
         matrixb.setItems(receiveData(matricesB.get(k - 1)));
         vectorb1.getColumns().setAll(createColumnsForB());
-        vectorb1.setItems(receiveDataForResult(result.get(0))); //TODO 2 - временной интервал
+        vectorb1.setItems(receiveDataForResult(result)); //TODO 2 - временной интервал
+//        }
     }
 
     private ObservableList<double[]> generateData(int nValue, int mValue) {
@@ -105,12 +107,14 @@ public class OutputController {
     }
 
     private List<TableColumn<Double[], String>> createColumnsForB() {
+//        System.out.println("createColumnsForB");
         return IntStream.range(0, Integer.parseInt(valueM.getText()))
                 .mapToObj(this::createColumn)
                 .collect(Collectors.toList());
     }
 
     private List<TableColumn<Double[], String>> createColumns() {
+//        System.out.println("createColumns");
         return IntStream.range(0, Integer.parseInt(valueN.getText()))
                 .mapToObj(this::createColumn)
                 .collect(Collectors.toList());
@@ -159,7 +163,7 @@ public class OutputController {
         this.plansP = plansP;
     }
 
-    public void setResult(List<Double[]> result) {
+    public void setResult(Double[] result) {
         this.result = result;
     }
 
