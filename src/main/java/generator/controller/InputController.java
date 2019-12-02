@@ -1,12 +1,8 @@
 package generator.controller;
 
 import javafx.beans.property.ReadOnlyObjectWrapper;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.Event;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -17,19 +13,14 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
-import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
-import javafx.scene.layout.Background;
 import javafx.stage.Stage;
 import generator.GeneratingProcessor;
-import javafx.util.Callback;
 
-import javax.swing.event.ChangeEvent;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -75,18 +66,16 @@ public class InputController {
     private double [][][] bMatrix = new double[TMAX + 1][TMAX + 1][TMAX + 1];
     private int [] arrN = new int[IMAX + 1];
     private int [] arrM = new int[IMAX + 1];
-    private int inter;
-    private int iter;
-    private int vp1 = 1;
-    private int vp2 = 1;
-    private boolean exist = false;
 
     private int currentInterval = 1;
     private int currentZadacha = 1;
 
+    private List<Double[][]> plansP = new ArrayList<>();
+    private List<Double[][]> matricesB = new ArrayList<>();
     private List<Double[]> resultB = new ArrayList<>();
 
     List<Dimension> dimensions = new ArrayList<>();
+
     @FXML
     void initialize() {
 
@@ -98,8 +87,6 @@ public class InputController {
         planp.getSelectionModel().setCellSelectionEnabled(true);
         matrixb.getSelectionModel().setCellSelectionEnabled(true);
         matrixb.setEditable(true);
-        List<Double[][]> matricesB = new ArrayList<>();
-        List<Double[][]> plansP = new ArrayList<>();
 
         nextButton.setOnAction(event -> {
             if(currentZadacha + 1 > Integer.parseInt(value2Text.getText())) {
@@ -135,8 +122,8 @@ public class InputController {
             }
 
             if(currentZadacha == 1 && currentInterval == 1) {
-                inter1.setText("Количество временных интервалов: (" + vp1 + " из " + timeIntervals + ")");
-                inter2.setText("Количество решаемых задач: (" + (vp2) + " из " + problemsToBeSolved + ")");
+                inter1.setText("Количество временных интервалов: (" + currentInterval + " из " + timeIntervals + ")");
+                inter2.setText("Количество решаемых задач: (" + (currentZadacha) + " из " + problemsToBeSolved + ")");
             }
 
             planp.getColumns().setAll(createColumns());
@@ -152,36 +139,33 @@ public class InputController {
         });
 
         saveDataButton.setOnAction(event -> {
-            System.out.println("saveDataButton");
-            System.out.println(" ");
-//            System.out.println(matrixb.getItems().get(0)[0] + ", "
-//                    + matrixb.getItems().get(0)[1] + ", "
-//                    + matrixb.getItems().get(1)[0] + ", "
-//                    + matrixb.getItems().get(1)[1]);
+            System.out.println('\n' + "saveDataButton");
 
-
-
-            double[][] tableAsArray = getTableAsArray(matrixb);
-            for (int i = 0; i < tableAsArray.length; i++) {
-                System.arraycopy(tableAsArray[i], 0, bMatrix[currentZadacha][i + 1], 1, tableAsArray[0].length);
+            if (currentInterval == 1) {
+                double[][] tableAsArray = getTableAsArray(matrixb);
+                for (int i = 0; i < tableAsArray.length; i++) {
+                    System.arraycopy(tableAsArray[i], 0, bMatrix[currentZadacha][i + 1], 1, tableAsArray[0].length);
+                }
+                matricesB.add(getTableAsDoubleArray(matrixb));
+                arrN[currentZadacha] = dimensions.get(currentZadacha - 1).nValue;
+                arrM[currentZadacha] = dimensions.get(currentZadacha - 1).mValue;
             }
 
-            double[] doubles = getTableAsArray(planp)[0];
-            System.arraycopy(doubles, 0, plan[currentZadacha], 1, doubles.length);
+            if (currentZadacha == 1) {
+                double[] doubles = getTableAsArray(planp)[0];
+                System.arraycopy(doubles, 0, plan[currentInterval], 1, doubles.length);
+                plansP.add(getTableAsDoubleArray(planp));
+            }
 
-            matricesB.add(getTableAsDoubleArray(matrixb));
-            plansP.add(getTableAsDoubleArray(planp));
-            arrN[currentZadacha] = dimensions.get(currentZadacha - 1).nValue;
-            arrM[currentZadacha] = dimensions.get(currentZadacha - 1).mValue;
 
-            System.out.println(Arrays.toString(bMatrix[currentInterval][currentZadacha]));
-            System.out.println(Arrays.toString(plan[currentZadacha]));
-            System.out.println(Arrays.toString(arrN));
-            System.out.println(Arrays.toString(arrM));
-            System.out.println(currentInterval);
-            System.out.println(currentZadacha);
+            System.out.println("bMatrix: " + Arrays.toString(bMatrix[currentInterval][currentZadacha]));
+            System.out.println("plan: " + Arrays.toString(plan[currentZadacha]));
+            System.out.println("arrN: " + arrN[currentZadacha]);
+            System.out.println("arrM: " + arrM[currentZadacha]);
+            System.out.println("currentInterval: " + currentInterval);
+            System.out.println("currentZadacha: " + currentZadacha);
 
-            GeneratingProcessor generate = new GeneratingProcessor(iter, inter, bMatrix, plan, arrM, arrN, currentInterval, currentZadacha, currentZadacha == 1 ? null : resultB.get(currentZadacha - 2)); //TODO
+            GeneratingProcessor generate = new GeneratingProcessor(bMatrix, plan, arrN[currentZadacha], arrM[currentZadacha], currentInterval, currentZadacha, currentZadacha == 1 ? null : resultB.get(currentZadacha - 2)); //TODO
             System.out.println(generate);
             try {
                 generate.process();
@@ -190,11 +174,7 @@ public class InputController {
             }
             Double[] result = generate.getResult();
             resultB.add(result);
-//            if (currentZadacha == 1) {
-//                System.out.println("Nothing");
-//            } else {
-//                System.out.println(Arrays.toString(resultB.get(currentZadacha - 2)));
-//            }
+            System.out.println("resultB: " + Arrays.toString(result));
 
             openNewSceneWithParam("/scene/output.fxml", matricesB, plansP, result);
         });
@@ -212,8 +192,6 @@ public class InputController {
         OutputController oc = loader.getController();
         oc.setMatricesB(mtrcsB);
         oc.setPlansP(mtrcsP);
-//        Double[] result = generatingProcessor.getResult();
-//        resultB.add(result);
         oc.setResult(result);
         oc.setValueN(valueN.getText());
         oc.setValueM(valueM.getText());
@@ -236,10 +214,6 @@ public class InputController {
                 IntStream.range(0, nValue)
                         .mapToObj(r -> IntStream.range(0, mValue).mapToDouble(c -> 0).toArray()).collect(Collectors.toList())
         );
-    }
-
-    private ObservableList<double[]> generateData() {
-        return FXCollections.observableArrayList(planp.getItems());
     }
 
     private List<TableColumn<double[], String>> createColumns() {
@@ -277,22 +251,7 @@ public class InputController {
         return arr;
     }
 
-    private void openNewScene(String window) {
-        nextButton.getScene().getWindow().hide();
-        FXMLLoader loader = new FXMLLoader();
-        loader.setLocation((getClass().getResource(window)));
-        try {
-            loader.load();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        Parent root = loader.getRoot();
-        Stage stage = new Stage();
-        stage.setScene(new Scene(root));
-        stage.showAndWait();
-    }
-
-    class Dimension {
+    private class Dimension {
         public int mValue;
         public int nValue;
 
