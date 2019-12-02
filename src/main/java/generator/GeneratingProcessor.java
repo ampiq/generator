@@ -17,9 +17,6 @@ public class GeneratingProcessor {
     private double[] Y = new double[MMAX + 1];
     private double[] X = new double[NMAX + 1];
     private double[] AX = new double[MMAX + 1];
-    private Double CX = 0d;
-    private String buf = "";
-    private String buff = "";
 
     private int l;
     private int k;
@@ -81,8 +78,8 @@ public class GeneratingProcessor {
     public void process() throws IOException {
         FileWriter fo;
 
-                buff = "" + l;
-                buf = "" + k;
+        String buff = "" + l;
+        String buf = "" + k;
                 fo = new FileWriter("out" + buff + "_" + buf + ".txt");
                 if(l == 1) {
                     fo.write(nOut + "  <==N" + '\n');
@@ -163,13 +160,13 @@ public class GeneratingProcessor {
                     }
                 }
 
-                CX=0d;
+        Double CX = 0d;
                 for (int j = 1; j <= nOut; j++) {
                     C[j]=DEL[j];
                     for (int i = 1; i <= mOut; i++) {
                         C[j]=C[j]+A[k][i][j]*Y[i];
                     }
-                    CX=CX+C[j]*X[j];
+                    CX = CX +C[j]*X[j];
                 }
 
                 fo.write("C, CX=  " + CX + '\n');

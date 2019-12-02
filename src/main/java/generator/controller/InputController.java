@@ -74,36 +74,43 @@ public class InputController {
     private List<Double[][]> matricesB = new ArrayList<>();
     private List<Double[]> resultB = new ArrayList<>();
 
-    List<Dimension> dimensions = new ArrayList<>();
+    private List<Dimension> dimensions = new ArrayList<>();
 
     @FXML
     void initialize() {
 
-        Alert alertError = new Alert(Alert.AlertType.ERROR);
         planp.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
         planp.setEditable(true);
-
         matrixb.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
         planp.getSelectionModel().setCellSelectionEnabled(true);
         matrixb.getSelectionModel().setCellSelectionEnabled(true);
         matrixb.setEditable(true);
 
         nextButton.setOnAction(event -> {
-            if(currentZadacha + 1 > Integer.parseInt(value2Text.getText())) {
-                ++currentInterval;
-                currentZadacha = 1;
-            } else {
-                ++currentZadacha;
+            if (currentZadacha == Integer.parseInt(value2Text.getText()) && currentInterval == Integer.parseInt(value1Text.getText())) {
+                showSpecificAlert(Alert.AlertType.INFORMATION, "Завершение работы", "Программа успешно завершила работу");
+                nextButton.getScene().getWindow().hide();
             }
 
-            if(currentInterval == 1) {
-                valueN.setText(Integer.toString(dimensions.get(currentZadacha - 2).mValue));
-                valueM.setDisable(false);
-            } else {
-                valueN.setText(Integer.toString(dimensions.get(currentZadacha - 1).nValue));
-                valueM.setText(Integer.toString(dimensions.get(currentZadacha - 1).mValue));
+            try {
+                if(currentZadacha + 1 > Integer.parseInt(value2Text.getText())) {
+                    ++currentInterval;
+                    currentZadacha = 1;
+                } else {
+                    ++currentZadacha;
+                }
+                if(currentInterval == 1) {
+                    valueN.setText(Integer.toString(dimensions.get(currentZadacha - 2).mValue));
+                    valueM.setDisable(false);
+                } else {
+                    valueN.setText(Integer.toString(dimensions.get(currentZadacha - 1).nValue));
+                    valueM.setText(Integer.toString(dimensions.get(currentZadacha - 1).mValue));
+                }
+            } catch (IndexOutOfBoundsException e) {
+                --currentZadacha; //TODO 
+                System.out.println("Press Show table");
+                showSpecificAlert(Alert.AlertType.ERROR, "Ошибка ввода", "Сгенерируйте таблицу, нажав Show table");
             }
-
             planp.getColumns().clear();
             matrixb.getColumns().clear();
 
@@ -112,10 +119,10 @@ public class InputController {
         });
 
         showTableButton.setOnAction(event -> {
-            Integer timeIntervals = Integer.parseInt(value1Text.getText());
-            Integer problemsToBeSolved = Integer.parseInt(value2Text.getText());
-            Integer mValue = Integer.parseInt(valueM.getText());
-            Integer nValue = Integer.parseInt(valueN.getText());
+            int problemsToBeSolved = Integer.parseInt(value2Text.getText());
+            int timeIntervals = Integer.parseInt(value1Text.getText());
+            int mValue = Integer.parseInt(valueM.getText());
+            int nValue = Integer.parseInt(valueN.getText());
 
             if(currentInterval == 1) {
                 dimensions.add(new Dimension(mValue, nValue));
@@ -141,6 +148,7 @@ public class InputController {
         saveDataButton.setOnAction(event -> {
             System.out.println('\n' + "saveDataButton");
 
+            try {
             if (currentInterval == 1) {
                 double[][] tableAsArray = getTableAsArray(matrixb);
                 for (int i = 0; i < tableAsArray.length; i++) {
@@ -157,7 +165,6 @@ public class InputController {
                 plansP.add(getTableAsDoubleArray(planp));
             }
 
-
             System.out.println("bMatrix: " + Arrays.toString(bMatrix[currentInterval][currentZadacha]));
             System.out.println("plan: " + Arrays.toString(plan[currentZadacha]));
             System.out.println("arrN: " + arrN[currentZadacha]);
@@ -167,27 +174,34 @@ public class InputController {
 
             GeneratingProcessor generate = new GeneratingProcessor(bMatrix, plan, arrN[currentZadacha], arrM[currentZadacha], currentInterval, currentZadacha, currentZadacha == 1 ? null : resultB.get(currentZadacha - 2)); //TODO
             System.out.println(generate);
-            try {
-                generate.process();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            generate.process();
+
             Double[] result = generate.getResult();
             resultB.add(result);
             System.out.println("resultB: " + Arrays.toString(result));
 
-            openNewSceneWithParam("/scene/output.fxml", matricesB, plansP, result);
+                openNewSceneWithParam("/scene/output.fxml", matricesB, plansP, result);
+            } catch (IOException e) {
+                System.out.println("Something went wrong with IO");
+            } catch (IndexOutOfBoundsException e) {
+                System.out.println("Press Show table");
+                showSpecificAlert(Alert.AlertType.ERROR, "Ошибка ввода", "Сгенерируйте таблицу, нажав Show table");
+            }
         });
     }
 
-    private void openNewSceneWithParam(String window, List<Double[][]> mtrcsB, List<Double[][]> mtrcsP, Double[] result) {
+    private void showSpecificAlert(Alert.AlertType type, String title, String content) {
+        Alert alert = new Alert(type);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(content);
+        alert.showAndWait();
+    }
+
+    private void openNewSceneWithParam(String window, List<Double[][]> mtrcsB, List<Double[][]> mtrcsP, Double[] result) throws IOException {
         FXMLLoader loader = new FXMLLoader();
         loader.setLocation((getClass().getResource(window)));
-        try {
-            loader.load();
-        } catch (IOException e) {
-            System.out.println("ERRRROORRO");
-        }
+        loader.load();
         Parent root = loader.getRoot();
         OutputController oc = loader.getController();
         oc.setMatricesB(mtrcsB);
@@ -206,10 +220,7 @@ public class InputController {
         stage.showAndWait();
     }
 
-
-
-    private ObservableList<double[]> generateDataInitial(int nValue, int mValue)
-    {
+    private ObservableList<double[]> generateDataInitial(int nValue, int mValue) {
         return FXCollections.observableArrayList(
                 IntStream.range(0, nValue)
                         .mapToObj(r -> IntStream.range(0, mValue).mapToDouble(c -> 0).toArray()).collect(Collectors.toList())

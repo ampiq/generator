@@ -1,22 +1,17 @@
 package generator.controller;
 
-import javafx.application.Platform;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.collections.FXCollections;
-import javafx.collections.ObservableArray;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
-import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.TextFieldTableCell;
+import javafx.stage.Stage;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -24,19 +19,13 @@ import java.util.stream.IntStream;
 public class OutputController {
 
     @FXML
-    private Button nextButton;
+    private Button okButton;
 
     @FXML
     private TableView<Double[]> matrixb;
 
     @FXML
-    private Label inter1;
-
-    @FXML
     private TableView<Double[]> vectorb1;
-
-    @FXML
-    private Label inter2;
 
     @FXML
     private TextField valueN;
@@ -52,9 +41,6 @@ public class OutputController {
 
     @FXML
     private TextField value2Text;
-
-    private int vp1 = 0;
-    private int vp2 = 0;
 
     private List<Double[][]> matricesB;
 
@@ -72,11 +58,16 @@ public class OutputController {
         value2Text.setDisable(true);
         valueM.setDisable(true);
         valueN.setDisable(true);
+        okButton.setOnAction(this::handleCloseButtonAction);
+    }
+
+    @FXML
+    public void handleCloseButtonAction(ActionEvent event) {
+        Stage stage = (Stage) okButton.getScene().getWindow();
+        stage.close();
     }
 
     void compute() {
-
-
         planp.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
         matrixb.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
         vectorb1.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
@@ -84,14 +75,12 @@ public class OutputController {
         matrixb.getSelectionModel().setCellSelectionEnabled(true);
         vectorb1.getSelectionModel().setCellSelectionEnabled(true);
 
-//        if (l == 1) {
         planp.getColumns().setAll(createColumns());
         planp.setItems(receiveData(plansP.get(l - 1)));
         matrixb.getColumns().setAll(createColumns());
         matrixb.setItems(receiveData(matricesB.get(k - 1)));
         vectorb1.getColumns().setAll(createColumnsForB());
-        vectorb1.setItems(receiveDataForResult(result)); //TODO 2 - временной интервал
-//        }
+        vectorb1.setItems(receiveDataForResult(result));
     }
 
     private ObservableList<double[]> generateData(int nValue, int mValue) {
@@ -107,14 +96,12 @@ public class OutputController {
     }
 
     private List<TableColumn<Double[], String>> createColumnsForB() {
-//        System.out.println("createColumnsForB");
         return IntStream.range(0, Integer.parseInt(valueM.getText()))
                 .mapToObj(this::createColumn)
                 .collect(Collectors.toList());
     }
 
     private List<TableColumn<Double[], String>> createColumns() {
-//        System.out.println("createColumns");
         return IntStream.range(0, Integer.parseInt(valueN.getText()))
                 .mapToObj(this::createColumn)
                 .collect(Collectors.toList());
@@ -125,20 +112,6 @@ public class OutputController {
         col.setCellValueFactory(param -> new ReadOnlyObjectWrapper<>(String.valueOf(param.getValue()[c])));
         col.setCellFactory(TextFieldTableCell.forTableColumn());
         return col;
-    }
-
-    private double[][] getTableAsArray(TableView<double[]> matrix) {
-        double[][] arr = new double[matrix.getItems().size()][matrix.getItems().get(0).length];
-        for (int i = 0; i < matrix.getItems().size(); i++) {
-            for (int j = 0; j < matrix.getItems().get(0).length; j++) {
-                arr[i][j] = matrix.getItems().get(i)[j];
-            }
-        }
-        return arr;
-    }
-
-    private TableView<Double[]> getArrayAsTable(Double[][] matrix) {
-        return new TableView<>(receiveData(matrix));
     }
 
     private ObservableList<Double[]> receiveDataForResult(Double[] arr) {

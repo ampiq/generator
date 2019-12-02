@@ -17,7 +17,7 @@
             <TableView fx:id="planp" prefHeight="61.0" prefWidth="450.0" AnchorPane.bottomAnchor="75.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
          </children>
       </AnchorPane>
-      <Button fx:id="nextButton" layoutX="366.0" layoutY="555.0" mnemonicParsing="false" prefHeight="31.0" prefWidth="70.0" text="Next" AnchorPane.bottomAnchor="14.0" AnchorPane.rightAnchor="14.0" />
+      <Button fx:id="okButton" layoutX="366.0" layoutY="555.0" mnemonicParsing="false" prefHeight="31.0" prefWidth="70.0" text="Next" AnchorPane.bottomAnchor="14.0" AnchorPane.rightAnchor="14.0" />
       <Label layoutX="15.0" layoutY="203.0" text="План P" AnchorPane.bottomAnchor="569.0" />
       <Label layoutX="15.0" layoutY="380.0" text="Матрица D" AnchorPane.bottomAnchor="392.0" />
       <Label layoutX="15.0" layoutY="567.0" text="Вектор В результат" />
