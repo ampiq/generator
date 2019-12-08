@@ -5,10 +5,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.stage.Stage;
 
@@ -17,6 +14,12 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 public class OutputController {
+
+    @FXML
+    private Label inter1;
+
+    @FXML
+    private Label inter2;
 
     @FXML
     private Button okButton;
@@ -68,6 +71,9 @@ public class OutputController {
     }
 
     void compute() {
+        inter1.setText("Количество временных интервалов: (" + l + " из " + value1Text.getText() + ")");
+        inter2.setText("Количество решаемых задач: (" + k + " из " + value2Text.getText() + ")");
+
         planp.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
         matrixb.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
         vectorb1.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
@@ -76,7 +82,11 @@ public class OutputController {
         vectorb1.getSelectionModel().setCellSelectionEnabled(true);
 
         planp.getColumns().setAll(createColumns());
-        planp.setItems(receiveData(plansP.get(l - 1)));
+        if(k == 1) {
+            planp.setItems(receiveData(plansP.get(l - 1)));
+        } else {
+
+        }
         matrixb.getColumns().setAll(createColumns());
         matrixb.setItems(receiveData(matricesB.get(k - 1)));
         vectorb1.getColumns().setAll(createColumnsForB());

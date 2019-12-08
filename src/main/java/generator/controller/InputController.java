@@ -23,6 +23,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 public class InputController {
 
@@ -76,6 +77,8 @@ public class InputController {
 
     private List<Dimension> dimensions = new ArrayList<>();
 
+    private Double[] previousResult;
+
     @FXML
     void initialize() {
 
@@ -86,65 +89,12 @@ public class InputController {
         matrixb.getSelectionModel().setCellSelectionEnabled(true);
         matrixb.setEditable(true);
 
-        nextButton.setOnAction(event -> {
-            if (currentZadacha == Integer.parseInt(value2Text.getText()) && currentInterval == Integer.parseInt(value1Text.getText())) {
-                showSpecificAlert(Alert.AlertType.INFORMATION, "Завершение работы", "Программа успешно завершила работу");
-                nextButton.getScene().getWindow().hide();
-            }
+        initializeNextButton();
+        initShowButton();
+        initGenerateButton();
+    }
 
-            try {
-                if(currentZadacha + 1 > Integer.parseInt(value2Text.getText())) {
-                    ++currentInterval;
-                    currentZadacha = 1;
-                } else {
-                    ++currentZadacha;
-                }
-                if(currentInterval == 1) {
-                    valueN.setText(Integer.toString(dimensions.get(currentZadacha - 2).mValue));
-                    valueM.setDisable(false);
-                } else {
-                    valueN.setText(Integer.toString(dimensions.get(currentZadacha - 1).nValue));
-                    valueM.setText(Integer.toString(dimensions.get(currentZadacha - 1).mValue));
-                }
-            } catch (IndexOutOfBoundsException e) {
-                --currentZadacha; //TODO 
-                System.out.println("Press Show table");
-                showSpecificAlert(Alert.AlertType.ERROR, "Ошибка ввода", "Сгенерируйте таблицу, нажав Show table");
-            }
-            planp.getColumns().clear();
-            matrixb.getColumns().clear();
-
-            inter1.setText("Количество временных интервалов: (" + currentInterval + " из " + value1Text.getText() + ")");
-            inter2.setText("Количество решаемых задач: (" + currentZadacha + " из " + value2Text.getText() + ")");
-        });
-
-        showTableButton.setOnAction(event -> {
-            int problemsToBeSolved = Integer.parseInt(value2Text.getText());
-            int timeIntervals = Integer.parseInt(value1Text.getText());
-            int mValue = Integer.parseInt(valueM.getText());
-            int nValue = Integer.parseInt(valueN.getText());
-
-            if(currentInterval == 1) {
-                dimensions.add(new Dimension(mValue, nValue));
-            }
-
-            if(currentZadacha == 1 && currentInterval == 1) {
-                inter1.setText("Количество временных интервалов: (" + currentInterval + " из " + timeIntervals + ")");
-                inter2.setText("Количество решаемых задач: (" + (currentZadacha) + " из " + problemsToBeSolved + ")");
-            }
-
-            planp.getColumns().setAll(createColumns());
-            matrixb.getColumns().setAll(createColumns());
-
-            planp.setItems(generateDataInitial(1, nValue));
-            matrixb.setItems(generateDataInitial(mValue, nValue));
-
-            value1Text.setDisable(true);
-            value2Text.setDisable(true);
-            valueM.setDisable(true);
-            valueN.setDisable(true);
-        });
-
+    private void initGenerateButton() {
         saveDataButton.setOnAction(event -> {
             System.out.println('\n' + "saveDataButton");
 
@@ -176,17 +126,92 @@ public class InputController {
             System.out.println(generate);
             generate.process();
 
-            Double[] result = generate.getResult();
-            resultB.add(result);
-            System.out.println("resultB: " + Arrays.toString(result));
+            previousResult = generate.getResult();
+            resultB.add(previousResult);
+            System.out.println("resultB: " + Arrays.toString(previousResult));
 
-                openNewSceneWithParam("/scene/output.fxml", matricesB, plansP, result);
+            openNewSceneWithParam("/scene/output.fxml", matricesB, plansP, previousResult);
+
             } catch (IOException e) {
                 System.out.println("Something went wrong with IO");
             } catch (IndexOutOfBoundsException e) {
                 System.out.println("Press Show table");
                 showSpecificAlert(Alert.AlertType.ERROR, "Ошибка ввода", "Сгенерируйте таблицу, нажав Show table");
             }
+        });
+    }
+
+    private void initializeNextButton()
+    {
+        nextButton.setOnAction(event -> {
+            if (currentZadacha == Integer.parseInt(value2Text.getText()) && currentInterval == Integer.parseInt(value1Text.getText())) {
+                showSpecificAlert(Alert.AlertType.INFORMATION, "Завершение работы", "Программа успешно завершила работу");
+                nextButton.getScene().getWindow().hide();
+            }
+
+            try {
+                if(currentZadacha + 1 > Integer.parseInt(value2Text.getText())) {
+                    ++currentInterval;
+                    currentZadacha = 1;
+                } else {
+                    ++currentZadacha;
+                }
+
+                if(currentInterval == 1) {
+                    valueN.setText(Integer.toString(dimensions.get(currentZadacha - 2).mValue));
+                    valueM.setDisable(false);
+                } else {
+                    valueN.setText(Integer.toString(dimensions.get(currentZadacha - 1).nValue));
+                    valueM.setText(Integer.toString(dimensions.get(currentZadacha - 1).mValue));
+                }
+            } catch (IndexOutOfBoundsException e) {
+                --currentZadacha; //TODO
+                System.out.println("Press Show table");
+                showSpecificAlert(Alert.AlertType.ERROR, "Ошибка ввода", "Сгенерируйте таблицу, нажав Show table");
+            }
+            planp.getColumns().clear();
+            matrixb.getColumns().clear();
+
+            inter1.setText("Количество временных интервалов: (" + currentInterval + " из " + value1Text.getText() + ")");
+            inter2.setText("Количество решаемых задач: (" + currentZadacha + " из " + value2Text.getText() + ")");
+        });
+    }
+
+    private double[] receiveDataFromResult(Double[] array) {
+        return Stream.of(array).mapToDouble(Double::doubleValue).toArray();
+    }
+
+    private void initShowButton()
+    {
+        showTableButton.setOnAction(event -> {
+            int problemsToBeSolved = Integer.parseInt(value2Text.getText());
+            int timeIntervals = Integer.parseInt(value1Text.getText());
+            int mValue = Integer.parseInt(valueM.getText());
+            int nValue = Integer.parseInt(valueN.getText());
+
+            if(currentInterval == 1) {
+                dimensions.add(new Dimension(mValue, nValue));
+            }
+
+            if(currentZadacha == 1 && currentInterval == 1) {
+                inter1.setText("Количество временных интервалов: (" + currentInterval + " из " + timeIntervals + ")");
+                inter2.setText("Количество решаемых задач: (" + (currentZadacha) + " из " + problemsToBeSolved + ")");
+            }
+
+            planp.getColumns().setAll(createColumns());
+            matrixb.getColumns().setAll(createColumns());
+
+            if(currentZadacha != 1) {
+                planp.setItems(FXCollections.observableArrayList(receiveDataFromResult(previousResult)));
+            } else {
+                planp.setItems(generateDataInitial(1, nValue));
+            }
+            matrixb.setItems(generateDataInitial(mValue, nValue));
+
+            value1Text.setDisable(true);
+            value2Text.setDisable(true);
+            valueM.setDisable(true);
+            valueN.setDisable(true);
         });
     }
 
