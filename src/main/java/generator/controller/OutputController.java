@@ -127,7 +127,7 @@ public class OutputController {
         return list;
     }
 
-    private ObservableList<Double[]> receiveData(Double[][] arr) {
+    public static ObservableList<Double[]> receiveData(Double[][] arr) {
         ObservableList<Double[]> lst = FXCollections.observableArrayList();
         for (int i = 0; i < arr.length; i++) {
             lst.add(arr[i]);

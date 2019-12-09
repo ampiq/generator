@@ -99,38 +99,38 @@ public class InputController {
             System.out.println('\n' + "saveDataButton");
 
             try {
-            if (currentInterval == 1) {
-                double[][] tableAsArray = getTableAsArray(matrixb);
-                for (int i = 0; i < tableAsArray.length; i++) {
-                    System.arraycopy(tableAsArray[i], 0, bMatrix[currentZadacha][i + 1], 1, tableAsArray[0].length);
+                if (currentInterval == 1) {
+                    double[][] tableAsArray = getTableAsArray(matrixb);
+                    for (int i = 0; i < tableAsArray.length; i++) {
+                        System.arraycopy(tableAsArray[i], 0, bMatrix[currentZadacha][i + 1], 1, tableAsArray[0].length);
+                    }
+                    matricesB.add(getTableAsDoubleArray(matrixb));
+                    arrN[currentZadacha] = dimensions.get(currentZadacha - 1).nValue;
+                    arrM[currentZadacha] = dimensions.get(currentZadacha - 1).mValue;
                 }
-                matricesB.add(getTableAsDoubleArray(matrixb));
-                arrN[currentZadacha] = dimensions.get(currentZadacha - 1).nValue;
-                arrM[currentZadacha] = dimensions.get(currentZadacha - 1).mValue;
-            }
 
-            if (currentZadacha == 1) {
-                double[] doubles = getTableAsArray(planp)[0];
-                System.arraycopy(doubles, 0, plan[currentInterval], 1, doubles.length);
-                plansP.add(getTableAsDoubleArray(planp)[0]);
-            }
+                if (currentZadacha == 1) {
+                    double[] doubles = getTableAsArray(planp)[0];
+                    System.arraycopy(doubles, 0, plan[currentInterval], 1, doubles.length);
+                    plansP.add(getTableAsDoubleArray(planp)[0]);
+                }
 
-            System.out.println("bMatrix: " + Arrays.toString(bMatrix[currentInterval][currentZadacha]));
-            System.out.println("plan: " + Arrays.toString(plan[currentZadacha]));
-            System.out.println("arrN: " + arrN[currentZadacha]);
-            System.out.println("arrM: " + arrM[currentZadacha]);
-            System.out.println("currentInterval: " + currentInterval);
-            System.out.println("currentZadacha: " + currentZadacha);
+                System.out.println("bMatrix: " + Arrays.toString(bMatrix[currentInterval][currentZadacha]));
+                System.out.println("plan: " + Arrays.toString(plan[currentZadacha]));
+                System.out.println("arrN: " + arrN[currentZadacha]);
+                System.out.println("arrM: " + arrM[currentZadacha]);
+                System.out.println("currentInterval: " + currentInterval);
+                System.out.println("currentZadacha: " + currentZadacha);
 
-            GeneratingProcessor generate = new GeneratingProcessor(bMatrix, plan, arrN[currentZadacha], arrM[currentZadacha], currentInterval, currentZadacha, currentZadacha == 1 ? null : resultB.get(currentZadacha - 2)); //TODO
-            System.out.println(generate);
-            generate.process();
+                GeneratingProcessor generate = new GeneratingProcessor(bMatrix, plan, arrN[currentZadacha], arrM[currentZadacha], currentInterval, currentZadacha, currentZadacha == 1 ? null : resultB.get(currentZadacha - 2)); //TODO
+                System.out.println(generate);
+                generate.process();
 
-            previousResult = generate.getResult();
-            resultB.add(previousResult);
-            System.out.println("resultB: " + Arrays.toString(previousResult));
+                previousResult = generate.getResult();
+                resultB.add(previousResult);
+                System.out.println("resultB: " + Arrays.toString(previousResult));
 
-            openNewSceneWithParam("/scene/output.fxml", matricesB, currentZadacha == 1 ? plansP.get(currentInterval - 1) : resultB.get(currentInterval * (Integer.parseInt(value2Text.getText()) - 1) + currentZadacha- 2), previousResult);
+                openNewSceneWithParam("/scene/output.fxml", matricesB, currentZadacha == 1 ? plansP.get(currentInterval - 1) : resultB.get((currentInterval - 1) * Integer.parseInt(value2Text.getText()) + currentZadacha - 2), previousResult);
 
             } catch (IOException e) {
                 System.out.println("Something went wrong with IO");
@@ -204,7 +204,11 @@ public class InputController {
             } else {
                 planp.setItems(generateDataInitial(1, nValue));
             }
-            matrixb.setItems(generateDataInitial(mValue, nValue));
+            if(currentInterval == 1) {
+                matrixb.setItems(generateDataInitial(mValue, nValue));
+            } else {
+                matrixb.setItems(receiveData(matricesB.get(currentZadacha - 1)));
+            }
 
             value1Text.setDisable(true);
             value2Text.setDisable(true);
@@ -241,6 +245,14 @@ public class InputController {
         Stage stage = new Stage();
         stage.setScene(new Scene(root));
         stage.showAndWait();
+    }
+
+    public ObservableList<double[]> receiveData(Double[][] arr) {
+        ObservableList<double[]> lst = FXCollections.observableArrayList();
+        for (int i = 0; i < arr.length; i++) {
+            lst.add(receiveDataFromResult(arr[i]));
+        }
+        return lst;
     }
 
     private ObservableList<double[]> generateDataInitial(int nValue, int mValue) {
