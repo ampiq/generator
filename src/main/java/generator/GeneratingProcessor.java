@@ -3,6 +3,9 @@ package generator;
 import java.io.FileWriter;
 import java.io.IOException;
 
+/**
+ * Класс, осуществляющий алгоритм.
+ */
 public class GeneratingProcessor {
     private static final int MMAX = 10;
     private static final int NMAX = 10;
@@ -30,6 +33,15 @@ public class GeneratingProcessor {
     private int nOut;
     private Double[] previousResult;
 
+    /**
+     * @param  dMatrixOut матрица ресурсов
+     * @param  planOut вектор плана
+     * @param  nOut значение N
+     * @param  mOut значение M
+     * @param  currentInterval текущий интервал
+     * @param  currentTask текущая задача
+     * @param  previousResult предыдущий результат
+     */
     public GeneratingProcessor(double[][][] dMatrixOut, double[][] planOut, int nOut, int mOut, int currentInterval, int currentTask, Double[] previousResult) {
         this.dMatrixOut = dMatrixOut;
         this.planOut = planOut;
@@ -40,6 +52,12 @@ public class GeneratingProcessor {
         this.previousResult = previousResult;
     }
 
+    /**
+     * Вернуть случайное значение на промежутке.
+     * @param  rfrom  Граница от.
+     * @param  rto Граница до.
+     * @return      the image at the specified URL
+     */
     private static double rand1(double rfrom, double rto) {
         long i;
         double d = Math.random();
@@ -49,6 +67,12 @@ public class GeneratingProcessor {
         return d / 10;
     }
 
+    /**
+     * Находит максимальное значение на промежутке.
+     * @param  val  Массив.
+     * @param  size Размер промежутка.
+     * @return      the image at the specified URL
+     */
     private static double maxX(double[] val, int size) {
         double maxVal = val[1];
         for(int i = 1; i <= size; i++) //TODO size?
@@ -61,7 +85,12 @@ public class GeneratingProcessor {
         return maxVal;
     }
 
-
+    /**
+     * Находит минимальное значение на промежутке.
+     * @param  val  Массив.
+     * @param  size Размер промежутка.
+     * @return      the image at the specified URL
+     */
     private static double minX(double[] val, int size) {
         double minVal = val[1];
         for(int i = 1; i <= size; i++) //TODO size?
@@ -74,7 +103,9 @@ public class GeneratingProcessor {
         return minVal;
     }
 
-
+    /**
+     * Алгоритм.
+     */
     public void process() throws IOException {
         FileWriter fo;
 

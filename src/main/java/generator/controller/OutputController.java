@@ -13,6 +13,9 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+/**
+ * Класс, представляющий контроллер вывода данных.
+ */
 public class OutputController {
 
     @FXML
@@ -55,6 +58,9 @@ public class OutputController {
 
     private int k;
 
+    /**
+     * Метод инициализации.
+     */
     @FXML
     void initialize() {
         value1Text.setDisable(true);
@@ -64,12 +70,19 @@ public class OutputController {
         okButton.setOnAction(this::handleCloseButtonAction);
     }
 
+    /**
+     * Обработчик закрытия окна.
+     * @param  event  Событие.
+     */
     @FXML
-    public void handleCloseButtonAction(ActionEvent event) {
+    private void handleCloseButtonAction(ActionEvent event) {
         Stage stage = (Stage) okButton.getScene().getWindow();
         stage.close();
     }
 
+    /**
+     * Сгенерировать таблицы.
+     */
     void compute() {
         inter1.setText("Количество временных интервалов: (" + l + " из " + value1Text.getText() + ")");
         inter2.setText("Количество решаемых задач: (" + k + " из " + value2Text.getText() + ")");
@@ -90,30 +103,31 @@ public class OutputController {
         vectorb1.setItems(receiveDataForResult(result));
     }
 
-    private ObservableList<double[]> generateData(int nValue, int mValue) {
-        return FXCollections.observableArrayList(
-                IntStream.range(0, nValue)
-                        .mapToObj(r ->
-                                        IntStream.range(0, mValue)
-//                                        .mapToDouble(c -> ThreadLocalRandom.current().nextInt(1, 20))
-                                                .mapToDouble(c -> 3)
-                                                .toArray()
-                        ).collect(Collectors.toList())
-        );
-    }
-
+    /**
+     * Создать столбцы для вектора B.
+     * @return List<TableColumn<double[], String>>
+     */
     private List<TableColumn<Double[], String>> createColumnsForB() {
         return IntStream.range(0, Integer.parseInt(valueM.getText()))
                 .mapToObj(this::createColumn)
                 .collect(Collectors.toList());
     }
 
+    /**
+     * Создать столбцы.
+     * @return List<TableColumn<double[], String>>
+     */
     private List<TableColumn<Double[], String>> createColumns() {
         return IntStream.range(0, Integer.parseInt(valueN.getText()))
                 .mapToObj(this::createColumn)
                 .collect(Collectors.toList());
     }
 
+    /**
+     * Создать столбец.
+     * @param  c  Название столбца.
+     * @return TableColumn<double[], String>
+     */
     private TableColumn<Double[], String> createColumn(int c) {
         TableColumn<Double[], String> col = new TableColumn<>("C" + (c + 1));
         col.setCellValueFactory(param -> new ReadOnlyObjectWrapper<>(String.valueOf(param.getValue()[c])));
@@ -121,12 +135,22 @@ public class OutputController {
         return col;
     }
 
+    /**
+     * Преобразовать вектор в данные для таблицы.
+     * @param  arr Вектор.
+     * @return ObservableList<double[]>
+     */
     private ObservableList<Double[]> receiveDataForResult(Double[] arr) {
         ObservableList<Double[]> list = FXCollections.observableArrayList();
         list.add(arr);
         return list;
     }
 
+    /**
+     * Преобразовать матрицу в данные для таблицы.
+     * @param  arr Матрица.
+     * @return ObservableList<double[]>
+     */
     public static ObservableList<Double[]> receiveData(Double[][] arr) {
         ObservableList<Double[]> lst = FXCollections.observableArrayList();
         for (int i = 0; i < arr.length; i++) {

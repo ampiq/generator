@@ -25,6 +25,9 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
+/**
+ * Класс, представляющий контроллер ввода данных.
+ */
 public class InputController {
 
     @FXML
@@ -74,14 +77,16 @@ public class InputController {
     private List<Double[]> plansP = new ArrayList<>();
     private List<Double[][]> matricesB = new ArrayList<>();
     private List<Double[]> resultB = new ArrayList<>();
+    private Double[] previousResult;
 
     private List<Dimension> dimensions = new ArrayList<>();
 
-    private Double[] previousResult;
 
+    /**
+     * Метод инициализации.
+     */
     @FXML
     void initialize() {
-
         planp.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
         planp.setEditable(true);
         matrixb.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
@@ -94,6 +99,9 @@ public class InputController {
         initGenerateButton();
     }
 
+    /**
+     * Отвечает за обработку входных данных.
+     */
     private void initGenerateButton() {
         saveDataButton.setOnAction(event -> {
             System.out.println('\n' + "saveDataButton");
@@ -141,6 +149,9 @@ public class InputController {
         });
     }
 
+    /**
+     * Отвечает за обработку кнопки Next.
+     */
     private void initNextButton() {
         nextButton.setOnAction(event -> {
             if (currentZadacha == Integer.parseInt(value2Text.getText()) && currentInterval == Integer.parseInt(value1Text.getText())) {
@@ -176,10 +187,9 @@ public class InputController {
         });
     }
 
-    private double[] receiveDataFromResult(Double[] array) {
-        return Stream.of(array).mapToDouble(Double::doubleValue).toArray();
-    }
-
+    /**
+     * Отвечает за обработку кнопки Show.
+     */
     private void initShowButton() {
         showTableButton.setOnAction(event -> {
             int problemsToBeSolved = Integer.parseInt(value2Text.getText());
@@ -217,6 +227,12 @@ public class InputController {
         });
     }
 
+    /**
+     * A student can be enrolled in many courses.
+     * @param  type Уровень сообщения
+     * @param  title Название окна сообщения
+     * @param  content Содержимое окна сообщения
+     */
     private void showSpecificAlert(Alert.AlertType type, String title, String content) {
         Alert alert = new Alert(type);
         alert.setTitle(title);
@@ -225,6 +241,22 @@ public class InputController {
         alert.showAndWait();
     }
 
+    /**
+     * Конвертирова массив Double в double.
+     * @param  array  Входной массив.
+     * @return double[]  Выходной массив.
+     */
+    private double[] receiveDataFromResult(Double[] array) {
+        return Stream.of(array).mapToDouble(Double::doubleValue).toArray();
+    }
+
+    /**
+     * Открыть сцену и передать параметры в выходной контроллер.
+     * @param  window  Название окна.
+     * @param  mtrcsB Матрицы ресурсов.
+     * @param  mtrxP Векторы планов.
+     * @param  result Вектор прошлого результата B, представляющий новый план.
+     */
     private void openNewSceneWithParam(String window, List<Double[][]> mtrcsB, Double[] mtrxP, Double[] result) throws IOException {
         FXMLLoader loader = new FXMLLoader();
         loader.setLocation((getClass().getResource(window)));
@@ -247,7 +279,12 @@ public class InputController {
         stage.showAndWait();
     }
 
-    public ObservableList<double[]> receiveData(Double[][] arr) {
+    /**
+     * Преобразовать матрицу в данные для таблицы.
+     * @param  arr Матрица.
+     * @return ObservableList<double[]>
+     */
+    private ObservableList<double[]> receiveData(Double[][] arr) {
         ObservableList<double[]> lst = FXCollections.observableArrayList();
         for (int i = 0; i < arr.length; i++) {
             lst.add(receiveDataFromResult(arr[i]));
@@ -255,6 +292,12 @@ public class InputController {
         return lst;
     }
 
+    /**
+     * Сгенерировать данные для таблицы MxN.
+     * @param  nValue  Значение N.
+     * @param  mValue  Значение M.
+     * @return ObservableList<double[]>
+     */
     private ObservableList<double[]> generateDataInitial(int nValue, int mValue) {
         return FXCollections.observableArrayList(
                 IntStream.range(0, nValue)
@@ -262,12 +305,21 @@ public class InputController {
         );
     }
 
+    /**
+     * Создать столбцы.
+     * @return List<TableColumn<double[], String>>
+     */
     private List<TableColumn<double[], String>> createColumns() {
         return IntStream.range(0, Integer.parseInt(valueN.getText()))
                 .mapToObj(this::createColumn)
                 .collect(Collectors.toList());
     }
 
+    /**
+     * Создать столбец.
+     * @param  c  Название столбца.
+     * @return TableColumn<double[], String>
+     */
     private TableColumn<double[], String> createColumn(int c) {
         TableColumn<double[], String> col = new TableColumn<>("C" + (c + 1));
         col.setCellValueFactory(param -> new ReadOnlyObjectWrapper<>(String.valueOf(param.getValue()[c])));
@@ -277,6 +329,11 @@ public class InputController {
         return col;
     }
 
+    /**
+     * Перевести табличное представление матрицы в двумерный массив.
+     * @param  matrix  an absolute URL giving the base location of the image
+     * @return double[][]
+     */
     private double[][] getTableAsArray(TableView<double[]> matrix) {
         double[][] arr = new double[matrix.getItems().size()][matrix.getItems().get(0).length];
         for (int i = 0; i < matrix.getItems().size(); i++) {
@@ -287,6 +344,11 @@ public class InputController {
         return arr;
     }
 
+    /**
+     * Перевести табличное представление матрицы в двумерный массив.
+     * @param  matrix  an absolute URL giving the base location of the image
+     * @return Double[][]
+     */
     private Double[][] getTableAsDoubleArray(TableView<double[]> matrix) {
         Double[][] arr = new Double[matrix.getItems().size()][matrix.getItems().get(0).length];
         for (int i = 0; i < matrix.getItems().size(); i++) {
@@ -297,6 +359,9 @@ public class InputController {
         return arr;
     }
 
+    /**
+     * Класс-обертка для значений M и N.
+     */
     private class Dimension {
         int mValue;
         int nValue;
