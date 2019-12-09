@@ -71,7 +71,7 @@ public class InputController {
     private int currentInterval = 1;
     private int currentZadacha = 1;
 
-    private List<Double[][]> plansP = new ArrayList<>();
+    private List<Double[]> plansP = new ArrayList<>();
     private List<Double[][]> matricesB = new ArrayList<>();
     private List<Double[]> resultB = new ArrayList<>();
 
@@ -89,7 +89,7 @@ public class InputController {
         matrixb.getSelectionModel().setCellSelectionEnabled(true);
         matrixb.setEditable(true);
 
-        initializeNextButton();
+        initNextButton();
         initShowButton();
         initGenerateButton();
     }
@@ -112,7 +112,7 @@ public class InputController {
             if (currentZadacha == 1) {
                 double[] doubles = getTableAsArray(planp)[0];
                 System.arraycopy(doubles, 0, plan[currentInterval], 1, doubles.length);
-                plansP.add(getTableAsDoubleArray(planp));
+                plansP.add(getTableAsDoubleArray(planp)[0]);
             }
 
             System.out.println("bMatrix: " + Arrays.toString(bMatrix[currentInterval][currentZadacha]));
@@ -130,7 +130,7 @@ public class InputController {
             resultB.add(previousResult);
             System.out.println("resultB: " + Arrays.toString(previousResult));
 
-            openNewSceneWithParam("/scene/output.fxml", matricesB, plansP, previousResult);
+            openNewSceneWithParam("/scene/output.fxml", matricesB, currentZadacha == 1 ? plansP.get(currentInterval - 1) : resultB.get(currentInterval * (Integer.parseInt(value2Text.getText()) - 1) + currentZadacha- 2), previousResult);
 
             } catch (IOException e) {
                 System.out.println("Something went wrong with IO");
@@ -141,8 +141,7 @@ public class InputController {
         });
     }
 
-    private void initializeNextButton()
-    {
+    private void initNextButton() {
         nextButton.setOnAction(event -> {
             if (currentZadacha == Integer.parseInt(value2Text.getText()) && currentInterval == Integer.parseInt(value1Text.getText())) {
                 showSpecificAlert(Alert.AlertType.INFORMATION, "Завершение работы", "Программа успешно завершила работу");
@@ -181,8 +180,7 @@ public class InputController {
         return Stream.of(array).mapToDouble(Double::doubleValue).toArray();
     }
 
-    private void initShowButton()
-    {
+    private void initShowButton() {
         showTableButton.setOnAction(event -> {
             int problemsToBeSolved = Integer.parseInt(value2Text.getText());
             int timeIntervals = Integer.parseInt(value1Text.getText());
@@ -223,14 +221,14 @@ public class InputController {
         alert.showAndWait();
     }
 
-    private void openNewSceneWithParam(String window, List<Double[][]> mtrcsB, List<Double[][]> mtrcsP, Double[] result) throws IOException {
+    private void openNewSceneWithParam(String window, List<Double[][]> mtrcsB, Double[] mtrxP, Double[] result) throws IOException {
         FXMLLoader loader = new FXMLLoader();
         loader.setLocation((getClass().getResource(window)));
         loader.load();
         Parent root = loader.getRoot();
         OutputController oc = loader.getController();
         oc.setMatricesB(mtrcsB);
-        oc.setPlansP(mtrcsP);
+        oc.setPlansP(mtrxP);
         oc.setResult(result);
         oc.setValueN(valueN.getText());
         oc.setValueM(valueM.getText());
@@ -288,10 +286,10 @@ public class InputController {
     }
 
     private class Dimension {
-        public int mValue;
-        public int nValue;
+        int mValue;
+        int nValue;
 
-        public Dimension(int m, int n) {
+        Dimension(int m, int n) {
             mValue = m;
             nValue = n;
         }

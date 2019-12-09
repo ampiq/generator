@@ -47,7 +47,7 @@ public class OutputController {
 
     private List<Double[][]> matricesB;
 
-    private List<Double[][]> plansP;
+    private Double[] planFromInput;
 
     private Double[] result;
 
@@ -82,11 +82,8 @@ public class OutputController {
         vectorb1.getSelectionModel().setCellSelectionEnabled(true);
 
         planp.getColumns().setAll(createColumns());
-        if(k == 1) {
-            planp.setItems(receiveData(plansP.get(l - 1)));
-        } else {
+        planp.setItems(receiveDataForResult(planFromInput));
 
-        }
         matrixb.getColumns().setAll(createColumns());
         matrixb.setItems(receiveData(matricesB.get(k - 1)));
         vectorb1.getColumns().setAll(createColumnsForB());
@@ -142,8 +139,8 @@ public class OutputController {
         this.matricesB = matricesB;
     }
 
-    public void setPlansP(List<Double[][]> plansP) {
-        this.plansP = plansP;
+    public void setPlansP(Double[] plansP) {
+        this.planFromInput = plansP;
     }
 
     public void setResult(Double[] result) {
