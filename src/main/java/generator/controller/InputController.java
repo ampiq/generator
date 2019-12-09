@@ -130,7 +130,7 @@ public class InputController {
                 System.out.println("currentInterval: " + currentInterval);
                 System.out.println("currentZadacha: " + currentZadacha);
 
-                GeneratingProcessor generate = new GeneratingProcessor(bMatrix, plan, arrN[currentZadacha], arrM[currentZadacha], currentInterval, currentZadacha, currentZadacha == 1 ? null : resultB.get(currentZadacha - 2)); //TODO
+                GeneratingProcessor generate = new GeneratingProcessor(bMatrix, plan, arrN[currentZadacha], arrM[currentZadacha], currentInterval, currentZadacha, currentZadacha == 1 ? null : resultB.get((currentInterval - 1) * Integer.parseInt(value2Text.getText()) + currentZadacha - 2)); //TODO
                 System.out.println(generate);
                 generate.process();
 
