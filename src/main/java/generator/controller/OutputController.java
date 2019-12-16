@@ -5,7 +5,11 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
+import javafx.scene.control.TextField;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.stage.Stage;
 
@@ -85,7 +89,7 @@ public class OutputController {
      */
     void compute() {
         inter1.setText("Количество временных интервалов: (" + l + " из " + value1Text.getText() + ")");
-        inter2.setText("Количество решаемых задач: (" + k + " из " + value2Text.getText() + ")");
+        inter2.setText("Количество решаемых задач: (" + (Integer.parseInt(value2Text.getText()) + 1 - k) + " из " + value2Text.getText() + ")");
 
         planp.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
         matrixb.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);

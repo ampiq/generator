@@ -183,7 +183,7 @@ public class InputController {
             matrixb.getColumns().clear();
 
             inter1.setText("Количество временных интервалов: (" + currentInterval + " из " + value1Text.getText() + ")");
-            inter2.setText("Количество решаемых задач: (" + currentZadacha + " из " + value2Text.getText() + ")");
+            inter2.setText("Количество решаемых задач: (" + (Integer.parseInt(value2Text.getText()) + 1 - currentZadacha) + " из " + value2Text.getText() + ")");
         });
     }
 
@@ -201,9 +201,9 @@ public class InputController {
                 dimensions.add(new Dimension(mValue, nValue));
             }
 
-            if(currentZadacha == 1 && currentInterval == 1) {
+            if (currentZadacha == 1 && currentInterval == 1) {
                 inter1.setText("Количество временных интервалов: (" + currentInterval + " из " + timeIntervals + ")");
-                inter2.setText("Количество решаемых задач: (" + (currentZadacha) + " из " + problemsToBeSolved + ")");
+                inter2.setText("Количество решаемых задач: (" + ((Integer.parseInt(value2Text.getText()) + 1 - currentZadacha)) + " из " + problemsToBeSolved + ")");
             }
 
             planp.getColumns().setAll(createColumns());
