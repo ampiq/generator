@@ -154,36 +154,40 @@ public class InputController {
      */
     private void initNextButton() {
         nextButton.setOnAction(event -> {
-            if (currentZadacha == Integer.parseInt(value2Text.getText()) && currentInterval == Integer.parseInt(value1Text.getText())) {
-                showSpecificAlert(Alert.AlertType.INFORMATION, "Завершение работы", "Программа успешно завершила работу");
-                nextButton.getScene().getWindow().hide();
-            }
-
             try {
-                if(currentZadacha + 1 > Integer.parseInt(value2Text.getText())) {
-                    ++currentInterval;
-                    currentZadacha = 1;
-                } else {
-                    ++currentZadacha;
+                if (currentZadacha == Integer.parseInt(value2Text.getText()) && currentInterval == Integer.parseInt(value1Text.getText())) {
+                    showSpecificAlert(Alert.AlertType.INFORMATION, "Завершение работы", "Программа успешно завершила работу");
+                    nextButton.getScene().getWindow().hide();
                 }
 
-                if(currentInterval == 1) {
-                    valueN.setText(Integer.toString(dimensions.get(currentZadacha - 2).mValue));
-                    valueM.setDisable(false);
-                } else {
-                    valueN.setText(Integer.toString(dimensions.get(currentZadacha - 1).nValue));
-                    valueM.setText(Integer.toString(dimensions.get(currentZadacha - 1).mValue));
+                try {
+                    if (currentZadacha + 1 > Integer.parseInt(value2Text.getText())) {
+                        ++currentInterval;
+                        currentZadacha = 1;
+                    } else {
+                        ++currentZadacha;
+                    }
+
+                    if (currentInterval == 1) {
+                        valueN.setText(Integer.toString(dimensions.get(currentZadacha - 2).mValue));
+                        valueM.setDisable(false);
+                    } else {
+                        valueN.setText(Integer.toString(dimensions.get(currentZadacha - 1).nValue));
+                        valueM.setText(Integer.toString(dimensions.get(currentZadacha - 1).mValue));
+                    }
+                } catch (IndexOutOfBoundsException e) {
+                    --currentZadacha; //TODO
+                    System.out.println("Press Show table");
+                    showSpecificAlert(Alert.AlertType.ERROR, "Ошибка ввода", "Сгенерируйте таблицу, нажав Show table");
                 }
-            } catch (IndexOutOfBoundsException e) {
-                --currentZadacha; //TODO
-                System.out.println("Press Show table");
-                showSpecificAlert(Alert.AlertType.ERROR, "Ошибка ввода", "Сгенерируйте таблицу, нажав Show table");
+                planp.getColumns().clear();
+                matrixb.getColumns().clear();
+
+                inter1.setText("Количество временных интервалов: (" + currentInterval + " из " + value1Text.getText() + ")");
+                inter2.setText("Количество решаемых задач: (" + (Integer.parseInt(value2Text.getText()) + 1 - currentZadacha) + " из " + value2Text.getText() + ")");
+            } catch (NumberFormatException e) {
+                showSpecificAlert(Alert.AlertType.ERROR, "Ошибка ввода", "Введите корректное количество интервалов, задач, M и N.");
             }
-            planp.getColumns().clear();
-            matrixb.getColumns().clear();
-
-            inter1.setText("Количество временных интервалов: (" + currentInterval + " из " + value1Text.getText() + ")");
-            inter2.setText("Количество решаемых задач: (" + (Integer.parseInt(value2Text.getText()) + 1 - currentZadacha) + " из " + value2Text.getText() + ")");
         });
     }
 
@@ -192,38 +196,42 @@ public class InputController {
      */
     private void initShowButton() {
         showTableButton.setOnAction(event -> {
-            int problemsToBeSolved = Integer.parseInt(value2Text.getText());
-            int timeIntervals = Integer.parseInt(value1Text.getText());
-            int mValue = Integer.parseInt(valueM.getText());
-            int nValue = Integer.parseInt(valueN.getText());
+            try {
+                int problemsToBeSolved = Integer.parseInt(value2Text.getText());
+                int timeIntervals = Integer.parseInt(value1Text.getText());
+                int mValue = Integer.parseInt(valueM.getText());
+                int nValue = Integer.parseInt(valueN.getText());
 
-            if(currentInterval == 1) {
-                dimensions.add(new Dimension(mValue, nValue));
+                if (currentInterval == 1) {
+                    dimensions.add(new Dimension(mValue, nValue));
+                }
+
+                if (currentZadacha == 1 && currentInterval == 1) {
+                    inter1.setText("Количество временных интервалов: (" + currentInterval + " из " + timeIntervals + ")");
+                    inter2.setText("Количество решаемых задач: (" + ((Integer.parseInt(value2Text.getText()) + 1 - currentZadacha)) + " из " + problemsToBeSolved + ")");
+                }
+
+                planp.getColumns().setAll(createColumns());
+                matrixb.getColumns().setAll(createColumns());
+
+                if (currentZadacha != 1) {
+                    planp.setItems(FXCollections.observableArrayList(receiveDataFromResult(previousResult)));
+                } else {
+                    planp.setItems(generateDataInitial(1, nValue));
+                }
+                if (currentInterval == 1) {
+                    matrixb.setItems(generateDataInitial(mValue, nValue));
+                } else {
+                    matrixb.setItems(receiveData(matricesB.get(currentZadacha - 1)));
+                }
+
+                value1Text.setDisable(true);
+                value2Text.setDisable(true);
+                valueM.setDisable(true);
+                valueN.setDisable(true);
+            } catch (NumberFormatException e) {
+                showSpecificAlert(Alert.AlertType.ERROR, "Ошибка ввода", "Введите корректное количество интервалов, задач, M и N.");
             }
-
-            if (currentZadacha == 1 && currentInterval == 1) {
-                inter1.setText("Количество временных интервалов: (" + currentInterval + " из " + timeIntervals + ")");
-                inter2.setText("Количество решаемых задач: (" + ((Integer.parseInt(value2Text.getText()) + 1 - currentZadacha)) + " из " + problemsToBeSolved + ")");
-            }
-
-            planp.getColumns().setAll(createColumns());
-            matrixb.getColumns().setAll(createColumns());
-
-            if(currentZadacha != 1) {
-                planp.setItems(FXCollections.observableArrayList(receiveDataFromResult(previousResult)));
-            } else {
-                planp.setItems(generateDataInitial(1, nValue));
-            }
-            if(currentInterval == 1) {
-                matrixb.setItems(generateDataInitial(mValue, nValue));
-            } else {
-                matrixb.setItems(receiveData(matricesB.get(currentZadacha - 1)));
-            }
-
-            value1Text.setDisable(true);
-            value2Text.setDisable(true);
-            valueM.setDisable(true);
-            valueN.setDisable(true);
         });
     }
 
